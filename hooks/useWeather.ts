@@ -15,6 +15,49 @@ interface WeatherState {
   locationName: string;
 }
 
+interface Coords {
+  latitude: number;
+  longitude: number;
+}
+
+/**
+ * Reads the pinned farm location saved during onboarding (same key written in
+ * app/onboarding.tsx). Returns null if onboarding was skipped / not completed.
+ */
+async function readFarmLocation(): Promise<Coords | null> {
+  try {
+    const raw = await AsyncStorage.getItem("farm_location");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<Coords>;
+    if (
+      typeof parsed.latitude === "number" &&
+      typeof parsed.longitude === "number"
+    ) {
+      return { latitude: parsed.latitude, longitude: parsed.longitude };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveLocationName(
+  coords: Coords,
+  fallback: string,
+): Promise<string> {
+  try {
+    const geocode = await Location.reverseGeocodeAsync(coords);
+    if (geocode.length > 0) {
+      const g = geocode[0];
+      const parts = [g.city ?? g.region, g.country].filter(Boolean);
+      if (parts.length > 0) return parts.join(", ");
+    }
+  } catch {
+    /* ignore geocode errors and fall through */
+  }
+  return fallback;
+}
+
 export function useWeather() {
   const [state, setState] = useState<WeatherState>({
     data: null,
@@ -33,27 +76,39 @@ export function useWeather() {
     }));
 
     try {
-      let coords = DEFAULT_LOCATION;
-      let locName = "Bavaria, DE";
+      // Preferred source: the pin the farmer placed during onboarding. This
+      // keeps Live Weather, Field Stats, Climate Score, Smart Irrigation and
+      // Frost Prediction all aligned on one canonical location.
+      const farm = await readFarmLocation();
 
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === "granted") {
-        const loc = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        });
-        coords = {
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-          
-        };
-        const locationData = JSON.stringify({ coords, locName });
-        await AsyncStorage.setItem("user_location", locationData);
+      let coords: Coords;
+      let locName: string;
 
-        const geocode = await Location.reverseGeocodeAsync(coords);
-        if (geocode.length > 0) {
-          const g = geocode[0];
-          const parts = [g.city ?? g.region, g.country].filter(Boolean);
-          locName = parts.join(", ");
+      if (farm) {
+        coords = farm;
+        locName = await resolveLocationName(
+          coords,
+          `${coords.latitude.toFixed(3)}, ${coords.longitude.toFixed(3)}`,
+        );
+      } else {
+        // Fallback: device GPS (only when onboarding hasn't been completed).
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === "granted") {
+          const loc = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          });
+          coords = {
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          };
+          locName = await resolveLocationName(coords, "Your location");
+          await AsyncStorage.setItem(
+            "user_location",
+            JSON.stringify({ coords, locName }),
+          );
+        } else {
+          coords = DEFAULT_LOCATION;
+          locName = "Bavaria, DE";
         }
       }
 
@@ -65,11 +120,11 @@ export function useWeather() {
         error: null,
         locationName: locName,
       });
-    } catch (err: any) {
+    } catch {
       try {
         const data = await fetchWeather(
           DEFAULT_LOCATION.latitude,
-          DEFAULT_LOCATION.longitude
+          DEFAULT_LOCATION.longitude,
         );
         setState({
           data,

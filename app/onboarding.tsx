@@ -59,14 +59,19 @@ const SLIDES = [
 const CROPS = ["Corn", "Wheat", "Soybeans", "Barley", "Rapeseed", "Potatoes"];
 const SIZES = ["< 5 ha", "5–20 ha", "20–50 ha", "50–100 ha", "> 100 ha"];
 
+// Default map starting view — centred on Podgorica so Montenegrin farmers see
+// their country immediately instead of an empty ocean tile. They can still
+// pan/zoom and drop a pin anywhere.
+const DEFAULT_MAP_REGION = {
+  latitude: 42.4411,
+  longitude: 19.2636,
+  latitudeDelta: 1.6,
+  longitudeDelta: 1.6,
+};
+
 export default function OnboardingScreen() {
   const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
-  const [mapRegion, setmapRegion] = useState({
-    latitude: 0,
-    longitude: 0,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
+  const [mapRegion, setmapRegion] = useState(DEFAULT_MAP_REGION);
   const handleMapPress = (e: MapPressEvent): void => {
     const { coordinate } = e.nativeEvent;
     setMarkerPosition(coordinate);
