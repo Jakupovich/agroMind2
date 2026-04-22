@@ -10,10 +10,12 @@ import { Colors } from '@/constants/theme';
 function AppGate() {
   const [checked, setChecked] = useState(false);
 
+  const FORCE_ONBOARDING = __DEV__; // uvijek true u dev modu, false u produkciji
+ 
   useEffect(() => {
     AsyncStorage.getItem('onboarding_complete').then((val) => {
       setChecked(true);
-      if (!val) {
+      if (FORCE_ONBOARDING || !val) {
         router.replace('/onboarding');
       }
     });
