@@ -39,6 +39,9 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "apiBaseUrl": "https://agromind2-production.up.railway.app"
     }
   }
 }

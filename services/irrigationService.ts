@@ -1,10 +1,14 @@
 /**
  * AgroMind backend API client — smart irrigation.
  *
- * Base URL is read from the Expo public env var `EXPO_PUBLIC_API_BASE_URL`.
- * When unset (e.g. local dev without a `.env`) we fall back to the production
- * Railway URL if available, otherwise `http://localhost:8000`.
+ * API base URL is resolved in this order:
+ *   1. `process.env.EXPO_PUBLIC_API_BASE_URL` (set via a root `.env` file;
+ *      requires a cache-cleared Expo restart — `npx expo start -c`).
+ *   2. `expo.extra.apiBaseUrl` from `app.json` (baked into the binary, so
+ *      it always reaches native builds and Expo Go).
+ *   3. Hard-coded Railway production URL as a last-resort fallback.
  */
+import Constants from "expo-constants";
 
 export type IrrigationStatus = "good" | "moderate" | "urgent";
 
@@ -17,14 +21,21 @@ export interface IrrigationResponse {
   ai_explanation: string;
 }
 
-const FALLBACK_BASE_URL = "http://localhost:8000";
+const PRODUCTION_FALLBACK_URL = "https://agromind2-production.up.railway.app";
 
 export function getApiBaseUrl(): string {
-  const raw = process.env.EXPO_PUBLIC_API_BASE_URL;
-  if (raw && raw.trim().length > 0) {
-    return raw.replace(/\/+$/, "");
+  const fromEnv = process.env.EXPO_PUBLIC_API_BASE_URL;
+  if (fromEnv && fromEnv.trim().length > 0) {
+    return fromEnv.trim().replace(/\/+$/, "");
   }
-  return FALLBACK_BASE_URL;
+
+  const fromManifest = (Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined)
+    ?.apiBaseUrl;
+  if (fromManifest && fromManifest.trim().length > 0) {
+    return fromManifest.trim().replace(/\/+$/, "");
+  }
+
+  return PRODUCTION_FALLBACK_URL;
 }
 
 export async function fetchIrrigation(
@@ -33,21 +44,33 @@ export async function fetchIrrigation(
   crop: string,
   signal?: AbortSignal,
 ): Promise<IrrigationResponse> {
+  const baseUrl = getApiBaseUrl();
   const params = new URLSearchParams({
     lat: lat.toString(),
     lon: lon.toString(),
     crop,
   });
+  const url = `${baseUrl}/irrigation?${params}`;
 
-  const response = await fetch(`${getApiBaseUrl()}/irrigation?${params}`, {
-    signal,
-    headers: { Accept: "application/json" },
-  });
+  if (__DEV__) {
+    console.log("[irrigation] GET", url);
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      signal,
+      headers: { Accept: "application/json" },
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Network request failed for ${url}: ${message}`);
+  }
 
   if (!response.ok) {
     const body = await response.text().catch(() => "");
     throw new Error(
-      `Irrigation API error ${response.status}${body ? `: ${body}` : ""}`,
+      `Irrigation API error ${response.status} at ${url}${body ? `: ${body}` : ""}`,
     );
   }
 
