@@ -3,7 +3,6 @@ import {
   DiseaseResponse,
   RiskLevel,
   riskColorKey,
-  riskLabel,
 } from "@/services/diseaseService";
 import { BlurView } from "expo-blur";
 import {
@@ -16,6 +15,7 @@ import {
 } from "lucide-react-native";
 import { MotiView } from "moti";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
@@ -43,9 +43,14 @@ function formatRange(start: string, end: string): string {
 }
 
 export function DiseaseRiskCard({ report, delay = 0 }: Props) {
+  const { t } = useTranslation();
   const overallColor = colorFor(report.overall_risk);
   const StatusIcon = report.overall_risk === "low" ? CheckCircle2 : AlertTriangle;
   const topRisk = [...report.risks].sort((a, b) => b.score - a.score)[0] ?? null;
+  const riskLabelFor = (level: RiskLevel): string =>
+    t(`disease.risk_${level}`, {
+      defaultValue: level.charAt(0).toUpperCase() + level.slice(1),
+    });
 
   return (
     <MotiView
@@ -78,7 +83,7 @@ export function DiseaseRiskCard({ report, delay = 0 }: Props) {
           >
             <StatusIcon size={12} color={overallColor} strokeWidth={2.5} />
             <Text style={[styles.badgeText, { color: overallColor }]}>
-              {riskLabel(report.overall_risk).toUpperCase()}
+              {riskLabelFor(report.overall_risk).toUpperCase()}
             </Text>
           </View>
         </View>
@@ -96,7 +101,7 @@ export function DiseaseRiskCard({ report, delay = 0 }: Props) {
                     <Text style={styles.riskName}>{r.name_en}</Text>
                   </View>
                   <Text style={[styles.riskLevel, { color: c }]}>
-                    {riskLabel(r.risk)}
+                    {riskLabelFor(r.risk)}
                   </Text>
                 </View>
                 <View style={styles.riskBarTrack}>
@@ -118,7 +123,7 @@ export function DiseaseRiskCard({ report, delay = 0 }: Props) {
             <View style={styles.preventHeader}>
               <Sparkles size={12} color={Colors.amber} strokeWidth={2.2} />
               <Text style={styles.preventHeaderText}>
-                Prevention · {topRisk.name_en}
+                {t("disease.prevention")} · {topRisk.name_en}
               </Text>
             </View>
             {topRisk.prevention.map((p, i) => (

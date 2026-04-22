@@ -8,6 +8,7 @@ import { BlurView } from "expo-blur";
 import { Droplets } from "lucide-react-native";
 import { MotiView } from "moti";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 interface Props {
@@ -29,7 +30,16 @@ export function SmartIrrigationCard({
   error = null,
   delay = 0,
 }: Props) {
+  const { t } = useTranslation();
   const statusColor = data ? STATUS_COLOR_MAP[statusColorKey(data.status)] : Colors.green;
+  const statusTranslations: Record<string, string> = {
+    good: t("common.good"),
+    moderate: t("common.moderate"),
+    urgent: t("common.urgent"),
+  };
+  const localisedStatus = data
+    ? statusTranslations[data.status] ?? statusLabel(data.status)
+    : "";
 
   return (
     <MotiView
@@ -47,7 +57,7 @@ export function SmartIrrigationCard({
             <View style={[styles.iconWrap, { backgroundColor: statusColor + "1F" }]}>
               <Droplets size={16} color={statusColor} strokeWidth={2} />
             </View>
-            <Text style={styles.title}>Smart Irrigation</Text>
+            <Text style={styles.title}>{t("irrigation.title")}</Text>
           </View>
           {data ? (
             <View
@@ -57,7 +67,7 @@ export function SmartIrrigationCard({
               ]}
             >
               <Text style={[styles.badgeText, { color: statusColor }]}>
-                {statusLabel(data.status).toUpperCase()}
+                {localisedStatus.toUpperCase()}
               </Text>
             </View>
           ) : null}
@@ -66,7 +76,7 @@ export function SmartIrrigationCard({
         {loading && !data ? (
           <View style={styles.loadingRow}>
             <ActivityIndicator color={Colors.green} />
-            <Text style={styles.loadingText}>Calculating water balance…</Text>
+            <Text style={styles.loadingText}>{t("irrigation.loading")}</Text>
           </View>
         ) : error && !data ? (
           <Text style={styles.errorText}>{error}</Text>
@@ -74,25 +84,27 @@ export function SmartIrrigationCard({
           <>
             <View style={styles.metricsRow}>
               <View style={styles.metric}>
-                <Text style={styles.metricLabel}>Status</Text>
+                <Text style={styles.metricLabel}>{t("irrigation.status")}</Text>
                 <Text style={[styles.metricValue, { color: statusColor }]}>
-                  {statusLabel(data.status)}
+                  {localisedStatus}
                 </Text>
               </View>
               <View style={styles.metricDivider} />
               <View style={styles.metric}>
                 <Text style={styles.metricLabel}>
-                  {data.irrigation_needed ? "Recommended Water" : "Status"}
+                  {data.irrigation_needed
+                    ? t("irrigation.recommended_water")
+                    : t("irrigation.status")}
                 </Text>
                 <Text style={styles.metricValue}>
                   {data.irrigation_needed
                     ? `${data.recommended_mm} mm`
-                    : "No irrigation needed"}
+                    : t("irrigation.no_irrigation_needed")}
                 </Text>
               </View>
               <View style={styles.metricDivider} />
               <View style={styles.metric}>
-                <Text style={styles.metricLabel}>7-Day Deficit</Text>
+                <Text style={styles.metricLabel}>{t("irrigation.seven_day_deficit")}</Text>
                 <Text style={styles.metricValue}>
                   {data.cumulative_deficit} mm
                 </Text>
@@ -102,7 +114,7 @@ export function SmartIrrigationCard({
             <Text style={styles.explanation}>{data.ai_explanation}</Text>
 
             <Text style={styles.cropFootnote}>
-              Crop: {data.crop.toUpperCase()}
+              {t("irrigation.crop_label")}: {data.crop.toUpperCase()}
             </Text>
           </>
         ) : null}

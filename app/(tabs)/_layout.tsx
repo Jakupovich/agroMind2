@@ -3,9 +3,11 @@ import { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import { Colors } from '@/constants/theme';
+import { useTranslation } from 'react-i18next';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const tabBarStyle = {
     height: Platform.select({
@@ -44,7 +46,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
+          title: t('tabs.dashboard'),
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="dashboard" size={size} color={color} />
           ),
@@ -53,7 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="prediction"
         options={{
-          title: 'Predict',
+          title: t('tabs.predict'),
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="auto-graph" size={size} color={color} />
           ),
@@ -62,7 +64,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="history"
         options={{
-          title: 'History',
+          title: t('tabs.history'),
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="history" size={size} color={color} />
           ),
@@ -71,7 +73,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="hardware"
         options={{
-          title: 'HailGuard',
+          title: t('tabs.hailguard'),
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="shield" size={size} color={color} />
           ),

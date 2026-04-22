@@ -12,7 +12,8 @@ import {
   Shield,
 } from "lucide-react-native";
 import { MotiView } from "moti";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dimensions,
   Pressable,
@@ -26,35 +27,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
-const SLIDES = [
-  {
-    image: require("@/assets/images/onboarding-1.jpg"),
-    tag: "SMART FARMING",
-    title: "Know Your\nField's Future",
-    subtitle:
-      "AI-powered climate analysis tailored to your exact field location and crop variety.",
-    accent: Colors.green,
-    icon: MapPin,
-  },
-  {
-    image: require("@/assets/images/onboarding-2.jpg"),
-    tag: "AI ENGINE",
-    title: "Predict Before\nRisks Arrive",
-    subtitle:
-      "Ensemble models trained on 20 years of regional climate data deliver 91% forecast accuracy.",
-    accent: Colors.amber,
-    icon: Cpu,
-  },
-  {
-    image: require("@/assets/images/onboarding-3.jpg"),
-    tag: "HAILGUARD",
-    title: "Automated\nPlant Protection",
-    subtitle:
-      "Smart hardware deploys hail shields the moment sensors detect incoming storm cells.",
-    accent: Colors.green,
-    icon: Shield,
-  },
+const SLIDE_IMAGES = [
+  require("@/assets/images/onboarding-1.jpg"),
+  require("@/assets/images/onboarding-2.jpg"),
+  require("@/assets/images/onboarding-3.jpg"),
 ];
+const SLIDE_ACCENTS = [Colors.green, Colors.amber, Colors.green];
+const SLIDE_ICONS = [MapPin, Cpu, Shield];
 
 const CROPS = ["Corn", "Wheat", "Soybeans", "Barley", "Rapeseed", "Potatoes"];
 const SIZES = ["< 5 ha", "5–20 ha", "20–50 ha", "50–100 ha", "> 100 ha"];
@@ -70,8 +49,38 @@ const DEFAULT_MAP_REGION = {
 };
 
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
   const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
   const [mapRegion, setmapRegion] = useState(DEFAULT_MAP_REGION);
+  const SLIDES = useMemo(
+    () => [
+      {
+        image: SLIDE_IMAGES[0],
+        tag: t("onboarding.slide1_tag"),
+        title: t("onboarding.slide1_title"),
+        subtitle: t("onboarding.slide1_subtitle"),
+        accent: SLIDE_ACCENTS[0],
+        icon: SLIDE_ICONS[0],
+      },
+      {
+        image: SLIDE_IMAGES[1],
+        tag: t("onboarding.slide2_tag"),
+        title: t("onboarding.slide2_title"),
+        subtitle: t("onboarding.slide2_subtitle"),
+        accent: SLIDE_ACCENTS[1],
+        icon: SLIDE_ICONS[1],
+      },
+      {
+        image: SLIDE_IMAGES[2],
+        tag: t("onboarding.slide3_tag"),
+        title: t("onboarding.slide3_title"),
+        subtitle: t("onboarding.slide3_subtitle"),
+        accent: SLIDE_ACCENTS[2],
+        icon: SLIDE_ICONS[2],
+      },
+    ],
+    [t],
+  );
   const handleMapPress = (e: MapPressEvent): void => {
     const { coordinate } = e.nativeEvent;
     setMarkerPosition(coordinate);
@@ -168,15 +177,15 @@ export default function OnboardingScreen() {
             >
               <MapPin size={24} color={Colors.green} strokeWidth={2} />
             </View>
-            <Text style={styles.setupTag}>FARM SETUP</Text>
-            <Text style={styles.setupTitle}>Tell us about{"\n"}your farm</Text>
+            <Text style={styles.setupTag}>{t("onboarding.setup_tag")}</Text>
+            <Text style={styles.setupTitle}>{t("onboarding.setup_title")}</Text>
             <Text style={styles.setupSubtitle}>
-              We'll personalise predictions for your specific field conditions.
+              {t("onboarding.setup_subtitle")}
             </Text>
           </View>
 
           <View style={styles.setupSection}>
-            <Text style={styles.setupSectionLabel}>Select your crops</Text>
+            <Text style={styles.setupSectionLabel}>{t("onboarding.select_crops")}</Text>
             <View style={styles.cropGrid}>
               {CROPS.map((crop, i) => {
                 const selected = selectedCrops.includes(crop);
@@ -221,7 +230,7 @@ export default function OnboardingScreen() {
                             },
                           ]}
                         >
-                          {crop}
+                          {t(`crops.${crop}`, { defaultValue: crop })}
                         </Text>
                       </MotiView>
                     </Pressable>
@@ -232,7 +241,7 @@ export default function OnboardingScreen() {
           </View>
 
           <View style={styles.setupSection}>
-            <Text style={styles.setupSectionLabel}>Farm size</Text>
+            <Text style={styles.setupSectionLabel}>{t("onboarding.farm_size")}</Text>
             <View style={styles.sizeRow}>
               {SIZES.map((size) => {
                 const selected = selectedSize === size;
@@ -278,10 +287,10 @@ export default function OnboardingScreen() {
               <View style={styles.mapHeader}>
                 <View style={styles.lwTitleRow}>
                   <Leaf size={14} color={Colors.green} strokeWidth={2} />
-                  <Text style={styles.lwTitle}>Field Mapping</Text>
+                  <Text style={styles.lwTitle}>{t("onboarding.field_mapping")}</Text>
                 </View>
                 <View style={styles.satelliteBadge}>
-                  <Text style={styles.satelliteText}>SATELLITE</Text>
+                  <Text style={styles.satelliteText}>{t("onboarding.satellite")}</Text>
                 </View>
               </View>
 
@@ -315,7 +324,7 @@ export default function OnboardingScreen() {
                     ? `${markerPosition.latitude.toFixed(
                         4
                       )}, ${markerPosition.longitude.toFixed(4)}`
-                    : "Tap map to set boundary"}
+                    : t("onboarding.tap_to_set_boundary")}
                 </Text>
               </View>
             </BlurView>
@@ -349,7 +358,7 @@ export default function OnboardingScreen() {
                   },
                 ]}
               >
-                Launch Agro-Predict
+                {t("onboarding.launch")}
               </Text>
               <ChevronRight
                 size={18}
@@ -364,7 +373,7 @@ export default function OnboardingScreen() {
           </Pressable>
 
           <Pressable onPress={complete} style={styles.skipSetup}>
-            <Text style={styles.skipSetupLabel}>Skip setup for now</Text>
+            <Text style={styles.skipSetupLabel}>{t("onboarding.skip_setup")}</Text>
           </Pressable>
         </MotiView>
       </ScrollView>
@@ -480,7 +489,9 @@ export default function OnboardingScreen() {
         >
           <View style={styles.nextBtn}>
             <Text style={styles.nextBtnLabel}>
-              {currentSlide < SLIDES.length - 1 ? "Continue" : "Get Started"}
+              {currentSlide < SLIDES.length - 1
+                ? t("onboarding.continue")
+                : t("onboarding.get_started")}
             </Text>
             <ChevronRight size={20} color="#000" strokeWidth={2.5} />
           </View>
@@ -488,7 +499,7 @@ export default function OnboardingScreen() {
 
         {currentSlide < SLIDES.length - 1 ? (
           <Pressable onPress={complete} style={styles.skipBtn}>
-            <Text style={styles.skipLabel}>Skip</Text>
+            <Text style={styles.skipLabel}>{t("common.skip")}</Text>
           </Pressable>
         ) : null}
       </BlurView>

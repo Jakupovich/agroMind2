@@ -14,6 +14,7 @@ import {
 } from "lucide-react-native";
 import { MotiView } from "moti";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
@@ -28,8 +29,8 @@ const STATUS_COLOR_MAP: Record<"green" | "amber" | "red", string> = {
   red: Colors.red,
 };
 
-function formatDate(iso: string | null): string {
-  if (!iso) return "Window closed";
+function formatDate(iso: string | null, closedLabel: string): string {
+  if (!iso) return closedLabel;
   const parsed = new Date(iso);
   if (Number.isNaN(parsed.getTime())) return iso;
   return parsed.toLocaleDateString(undefined, {
@@ -44,6 +45,8 @@ export function FrostPredictionCard({
   gptEnabled,
   delay = 0,
 }: Props) {
+  const { t } = useTranslation();
+  const windowClosed = t("frost.window_closed");
   const light = prediction.risk.traffic_light;
   const color = STATUS_COLOR_MAP[trafficLightColorKey(light)];
   const StatusIcon = light === "green" ? CheckCircle2 : AlertTriangle;
@@ -88,7 +91,9 @@ export function FrostPredictionCard({
           >
             <StatusIcon size={12} color={color} strokeWidth={2.5} />
             <Text style={[styles.badgeText, { color }]}>
-              {trafficLightLabel(light).toUpperCase()}
+              {t(`frost.light_${light}`, {
+                defaultValue: trafficLightLabel(light),
+              }).toUpperCase()}
             </Text>
           </View>
         </View>
@@ -97,22 +102,22 @@ export function FrostPredictionCard({
           <View style={styles.metric}>
             <View style={styles.metricLabelRow}>
               <Calendar size={11} color={Colors.textMuted} strokeWidth={2} />
-              <Text style={styles.metricLabel}>Recommended</Text>
+              <Text style={styles.metricLabel}>{t("frost.recommended")}</Text>
             </View>
             <Text style={styles.metricValue}>
-              {formatDate(prediction.recommended_planting.date)}
+              {formatDate(prediction.recommended_planting.date, windowClosed)}
             </Text>
           </View>
           <View style={styles.metricDivider} />
           <View style={styles.metric}>
-            <Text style={styles.metricLabel}>Avg / Max 14d</Text>
+            <Text style={styles.metricLabel}>{t("frost.avg_max_14d")}</Text>
             <Text style={[styles.metricValue, { color }]}>
               {avgPct}% / {maxPct}%
             </Text>
           </View>
           <View style={styles.metricDivider} />
           <View style={styles.metric}>
-            <Text style={styles.metricLabel}>Risk days</Text>
+            <Text style={styles.metricLabel}>{t("frost.risk_days")}</Text>
             <Text style={styles.metricValue}>
               {prediction.risk.crop_frost_risk_days_14d} / 14
             </Text>
@@ -143,7 +148,7 @@ export function FrostPredictionCard({
             <View style={styles.bulletsHeader}>
               <Sparkles size={12} color={Colors.amber} strokeWidth={2.2} />
               <Text style={styles.bulletsHeaderText}>
-                GPT advisor{prediction.gpt_model ? ` · ${prediction.gpt_model}` : ""}
+                {t("frost.gpt_advisor")}{prediction.gpt_model ? ` · ${prediction.gpt_model}` : ""}
               </Text>
             </View>
           ) : null}
@@ -155,10 +160,10 @@ export function FrostPredictionCard({
         </View>
 
         <Text style={styles.footer}>
-          Confidence {confidencePct}% · Model AUC{" "}
-          {prediction.confidence.model_auc.toFixed(3)} · Window{" "}
-          {formatDate(prediction.recommended_planting.window_start)} →{" "}
-          {formatDate(prediction.recommended_planting.window_end)}
+          {t("frost.confidence")} {confidencePct}% · {t("frost.model_auc")}{" "}
+          {prediction.confidence.model_auc.toFixed(3)} · {t("frost.window")}{" "}
+          {formatDate(prediction.recommended_planting.window_start, windowClosed)} →{" "}
+          {formatDate(prediction.recommended_planting.window_end, windowClosed)}
         </Text>
       </BlurView>
     </MotiView>

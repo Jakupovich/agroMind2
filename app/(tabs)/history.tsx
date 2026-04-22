@@ -12,6 +12,7 @@ import {
 } from "lucide-react-native";
 import { MotiView } from "moti";
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Dimensions,
@@ -91,6 +92,7 @@ const impactColor = (impact: string) => {
 
 export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const farm = useFarmProfile();
   const { data, loading, error, refreshing } = useClimateHistory(
     farm.location?.latitude ?? null,
@@ -140,34 +142,36 @@ export default function HistoryScreen() {
         >
           <View style={styles.titleRow}>
             <BarChart2 size={18} color={Colors.green} strokeWidth={2} />
-            <Text style={styles.pageTag}>CLIMATE ARCHIVE</Text>
+            <Text style={styles.pageTag}>{t("history.title")}</Text>
             {refreshing ? (
               <ActivityIndicator color={Colors.green} size="small" />
             ) : null}
           </View>
-          <Text style={styles.pageTitle}>Historical Data</Text>
+          <Text style={styles.pageTitle}>{t("tabs.history")}</Text>
           <Text style={styles.pageSubtitle}>
             {data
-              ? `${data.rangeEnd - data.rangeStart + 1}-year climate analysis · ${farm.location ? `${farm.location.latitude.toFixed(3)}, ${farm.location.longitude.toFixed(3)}` : "your farm"}`
-              : "Fetching Open-Meteo archive for your farm…"}
+              ? t("history.subtitle", {
+                  start: data.rangeStart,
+                  end: data.rangeEnd,
+                })
+              : t("common.loading")}
           </Text>
         </MotiView>
 
         {!farm.loading && !farm.location ? (
           <BlurView intensity={16} tint="dark" style={styles.emptyCard}>
             <Text style={styles.emptyText}>
-              Finish onboarding (pin your farm location) to see 20 years of
-              historical climate data for your field.
+              {t("history.empty")}
             </Text>
           </BlurView>
         ) : loading && !data ? (
           <BlurView intensity={16} tint="dark" style={styles.loadingCard}>
             <ActivityIndicator color={Colors.green} size="large" />
             <Text style={styles.loadingText}>
-              Loading 20 years of archive data…
+              {t("history.loading_title")}
             </Text>
             <Text style={styles.loadingSub}>
-              First run can take ~10s. Cached for 24h afterwards.
+              {t("history.loading_hint")}
             </Text>
           </BlurView>
         ) : error && !data ? (
@@ -179,19 +183,21 @@ export default function HistoryScreen() {
             <View style={styles.kpiRow}>
               {[
                 {
-                  label: "Total Warming",
+                  label: t("history.total_warming"),
                   value: `${totalWarming > 0 ? "+" : ""}${totalWarming}°C`,
                   color: totalWarming >= 0 ? Colors.red : Colors.blue,
                   sub: `${data.rangeStart}→${data.rangeEnd}`,
                 },
                 {
-                  label: `${latest?.year ?? ""} Avg`,
+                  label: latest?.year
+                    ? `${latest.year} · ${t("history.latest_year_avg")}`
+                    : t("history.latest_year_avg"),
                   value: `${latest?.avgTemp ?? "—"}°C`,
                   color: Colors.amber,
-                  sub: `${latest?.frostDays ?? 0} frost days`,
+                  sub: `${latest?.frostDays ?? 0} ${t("history.frost_days_short")}`,
                 },
                 {
-                  label: "Wettest Year",
+                  label: t("history.wettest_year"),
                   value: `${wettestYear?.precipitation ?? 0}mm`,
                   color: Colors.blue,
                   sub: `${wettestYear?.year ?? ""}`,
@@ -238,7 +244,7 @@ export default function HistoryScreen() {
             >
               <BlurView intensity={16} tint="dark" style={styles.monthlyCard}>
                 <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionTitle}>Monthly Climate</Text>
+                  <Text style={styles.sectionTitle}>{t("history.monthly_climate")}</Text>
                   <Text style={styles.sectionSub}>
                     Avg across {data.rangeEnd - data.rangeStart + 1} years
                   </Text>
@@ -246,16 +252,16 @@ export default function HistoryScreen() {
                 <View style={styles.monthlyTable}>
                   <View style={styles.monthlyHeaderRow}>
                     <Text style={[styles.monthlyHeader, { flex: 0.8 }]}>
-                      MONTH
+                      {t("history.month").toUpperCase()}
                     </Text>
                     <Text style={[styles.monthlyHeader, { flex: 1 }]}>
-                      AVG °C
+                      {t("history.avg_c").toUpperCase()}
                     </Text>
                     <Text style={[styles.monthlyHeader, { flex: 1.6 }]}>
-                      RAINFALL
+                      {t("history.rainfall").toUpperCase()}
                     </Text>
                     <Text style={[styles.monthlyHeader, { flex: 1.6 }]}>
-                      FROST
+                      {t("history.frost_days").toUpperCase()}
                     </Text>
                   </View>
                   {data.byMonth.map((m) => (
@@ -319,7 +325,7 @@ export default function HistoryScreen() {
               <BlurView intensity={16} tint="dark" style={styles.decadeCard}>
                 <View style={styles.sectionHeader}>
                   <TrendingUp size={16} color={Colors.amber} strokeWidth={2} />
-                  <Text style={styles.sectionTitle}>Decade Comparison</Text>
+                  <Text style={styles.sectionTitle}>{t("history.decade_comparison")}</Text>
                 </View>
                 <ScrollView
                   horizontal
@@ -336,9 +342,9 @@ export default function HistoryScreen() {
                           color={Colors.blue}
                           strokeWidth={2}
                         />
-                        <Text style={styles.decadeMeta}>{d.frost} d/yr</Text>
+                        <Text style={styles.decadeMeta}>{d.frost} {t("history.frost_per_year_short")}</Text>
                       </View>
-                      <Text style={styles.decadeMeta}>{d.precip} mm/yr</Text>
+                      <Text style={styles.decadeMeta}>{d.precip} {t("history.mm_per_year_short")}</Text>
                     </View>
                   ))}
                 </ScrollView>
@@ -353,7 +359,7 @@ export default function HistoryScreen() {
               <BlurView intensity={16} tint="dark" style={styles.eventsCard}>
                 <View style={styles.sectionHeader}>
                   <AlertCircle size={16} color={Colors.amber} strokeWidth={2} />
-                  <Text style={styles.sectionTitle}>Extreme Years</Text>
+                  <Text style={styles.sectionTitle}>{t("history.extreme_years")}</Text>
                   <Text style={styles.sectionSub}>
                     Top 5 by |anomaly| vs baseline
                   </Text>
@@ -381,7 +387,9 @@ export default function HistoryScreen() {
                       </View>
                       <View style={styles.eventInfo}>
                         <Text style={styles.eventName}>
-                          {ev.anomaly >= 0 ? "Warmer" : "Cooler"} than baseline
+                          {ev.anomaly >= 0
+                            ? t("history.warmer_than_baseline")
+                            : t("history.cooler_than_baseline")}
                         </Text>
                         <View style={styles.eventMeta}>
                           <Text
@@ -411,7 +419,7 @@ export default function HistoryScreen() {
                             { color: impactColor(ev.impact) },
                           ]}
                         >
-                          {ev.impact}
+                          {t(`history.impact_${ev.impact}`, { defaultValue: ev.impact })}
                         </Text>
                       </View>
                     </View>
