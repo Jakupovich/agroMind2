@@ -4,6 +4,7 @@ import { PredictionCard } from "@/components/PredictionCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { predictions } from "@/constants/mockData";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
+import { useFarmProfile } from "@/hooks/useFarmProfile";
 import { useIrrigation } from "@/hooks/useIrrigation";
 import { useWeather } from "@/hooks/useWeather";
 import {
@@ -77,16 +78,17 @@ export default function DashboardScreen() {
     refresh,
   } = useWeather();
 
-  const primaryCrop = (predictions[0]?.crop ?? "corn").toLowerCase();
+  const farm = useFarmProfile();
+  const irrigationLat = farm.location?.latitude ?? null;
+  const irrigationLon = farm.location?.longitude ?? null;
+  const primaryCrop = (
+    farm.crops[0] ?? predictions[0]?.crop ?? "corn"
+  ).toLowerCase();
   const {
     data: irrigation,
     loading: irrigationLoading,
     error: irrigationError,
-  } = useIrrigation(
-    weather?.latitude ?? null,
-    weather?.longitude ?? null,
-    primaryCrop,
-  );
+  } = useIrrigation(irrigationLat, irrigationLon, primaryCrop);
 
   const liveFieldStats = weather
     ? [
@@ -457,8 +459,13 @@ export default function DashboardScreen() {
         </View>
         <SmartIrrigationCard
           data={irrigation}
-          loading={irrigationLoading}
-          error={irrigationError}
+          loading={irrigationLoading || farm.loading}
+          error={
+            irrigationError ??
+            (!farm.loading && !farm.location
+              ? "Finish onboarding to pick your farm location."
+              : null)
+          }
           delay={350}
         />
 
