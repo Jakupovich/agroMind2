@@ -85,3 +85,76 @@ async def generate_irrigation_explanation(
     except Exception:  # noqa: BLE001 — never break the API on AI errors
         logger.exception("OpenAI explanation failed; using rule-based fallback")
         return fallback
+
+
+def _rule_based_disease_explanation(
+    crop: str,
+    overall_risk: str,
+    readings: list[tuple[str, str, float]],
+) -> str:
+    crop_label = crop.capitalize()
+    high = [name for (name, level, _) in readings if level == "high"]
+    moderate = [name for (name, level, _) in readings if level == "moderate"]
+    if overall_risk == "high" and high:
+        threats = ", ".join(high)
+        return (
+            f"{crop_label} is under high pressure from {threats} over the next 7 days. "
+            "Start a protectant treatment now and scout the field daily."
+        )
+    if overall_risk == "moderate" and (high or moderate):
+        threats = ", ".join(high + moderate)
+        return (
+            f"{crop_label} shows moderate risk from {threats} in the coming week. "
+            "Keep the canopy dry, scout twice this week, and prepare a treatment plan."
+        )
+    return (
+        f"{crop_label} shows low overall disease and pest pressure over the next 7 days. "
+        "Continue routine scouting; no immediate intervention needed."
+    )
+
+
+async def generate_disease_explanation(
+    crop: str,
+    overall_risk: str,
+    readings: list[tuple[str, str, float]],
+) -> str:
+    """Return a short 1-2 sentence summary of a disease/pest risk report.
+
+    Falls back to a deterministic rule-based template when OpenAI is
+    unavailable — the endpoint should never fail because of the explainer.
+    """
+    settings = get_settings()
+    fallback = _rule_based_disease_explanation(crop, overall_risk, readings)
+
+    if not settings.openai_api_key:
+        return fallback
+
+    try:
+        from openai import AsyncOpenAI
+
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        bullet_list = "\n".join(
+            f"- {name}: {level} (score {score:.0f}/100)"
+            for (name, level, score) in readings
+        ) or "- (no risk models matched this crop)"
+        prompt = (
+            "You are an agronomy assistant. In 1-2 short sentences, summarise "
+            "a disease and pest risk report for a farmer. Be concrete and "
+            f"actionable. Crop: {crop}. Overall risk: {overall_risk}.\n"
+            "Per-model breakdown:\n"
+            f"{bullet_list}"
+        )
+        completion = await client.chat.completions.create(
+            model=settings.openai_model,
+            messages=[
+                {"role": "system", "content": "You write concise farming advice."},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=160,
+            temperature=0.4,
+        )
+        content = (completion.choices[0].message.content or "").strip()
+        return content or fallback
+    except Exception:  # noqa: BLE001
+        logger.exception("OpenAI disease explanation failed; using rule-based fallback")
+        return fallback
