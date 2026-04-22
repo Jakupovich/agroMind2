@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
 
+    # Sentinel Hub / Copernicus Data Space Ecosystem (optional — the /ndvi
+    # endpoint returns 503 when these are missing).
+    sentinelhub_client_id: str | None = None
+    sentinelhub_client_secret: str | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:
