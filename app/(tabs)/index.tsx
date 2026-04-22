@@ -1,8 +1,10 @@
 import { ClimateScoreCard } from "@/components/ClimateScoreCard";
 import { FieldStatsCard } from "@/components/FieldStatsCard";
 import { PredictionCard } from "@/components/PredictionCard";
+import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { predictions } from "@/constants/mockData";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
+import { useIrrigation } from "@/hooks/useIrrigation";
 import { useWeather } from "@/hooks/useWeather";
 import {
   getWeatherDescription,
@@ -74,6 +76,17 @@ export default function DashboardScreen() {
     locationName,
     refresh,
   } = useWeather();
+
+  const primaryCrop = (predictions[0]?.crop ?? "corn").toLowerCase();
+  const {
+    data: irrigation,
+    loading: irrigationLoading,
+    error: irrigationError,
+  } = useIrrigation(
+    weather?.latitude ?? null,
+    weather?.longitude ?? null,
+    primaryCrop,
+  );
 
   const liveFieldStats = weather
     ? [
@@ -436,6 +449,17 @@ export default function DashboardScreen() {
           region="Upper Bavaria · Zone 7b"
           season="Spring 2025"
           delay={300}
+        />
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Smart Irrigation</Text>
+          <Droplets size={16} color={Colors.textSecondary} strokeWidth={1.8} />
+        </View>
+        <SmartIrrigationCard
+          data={irrigation}
+          loading={irrigationLoading}
+          error={irrigationError}
+          delay={350}
         />
 
         <View style={styles.sectionHeader}>
