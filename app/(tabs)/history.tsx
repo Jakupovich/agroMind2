@@ -1,47 +1,123 @@
-import React, { useState } from 'react';
+import { ClimateHistoryChart } from "@/components/ClimateHistoryChart";
+import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
+import { useClimateHistory } from "@/hooks/useClimateHistory";
+import { useFarmProfile } from "@/hooks/useFarmProfile";
+import { YearlyStats } from "@/services/historyService";
+import { BlurView } from "expo-blur";
 import {
-  View,
-  Text,
-  StyleSheet,
+  AlertCircle,
+  BarChart2,
+  Snowflake,
+  TrendingUp,
+} from "lucide-react-native";
+import { MotiView } from "moti";
+import React, { useMemo } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
   ScrollView,
-  Pressable,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MotiView } from 'moti';
-import { BlurView } from 'expo-blur';
-import { BarChart2, TrendingUp, AlertCircle, Calendar } from 'lucide-react-native';
-import { WeatherChart } from '../../components/WeatherChart';
-import { Colors, Spacing, Radius, FontSize } from '@/constants/theme';
-import { temperatureHistory } from '@/constants/mockData';
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const climateEvents = [
-  { year: 2022, event: 'Record European Heatwave', impact: 'critical', tempAnomaly: '+3.4°C', loss: '€2.1B' },
-  { year: 2020, event: 'Extreme Drought Season', impact: 'high', tempAnomaly: '+3.1°C', loss: '€890M' },
-  { year: 2018, event: 'Summer Drought & Wildfire', impact: 'critical', tempAnomaly: '+2.8°C', loss: '€1.4B' },
-  { year: 2012, event: 'Spring Frost Anomaly', impact: 'medium', tempAnomaly: '+1.3°C', loss: '€340M' },
-  { year: 2010, event: 'Cold Winter Extreme', impact: 'high', tempAnomaly: '-1.1°C', loss: '€670M' },
+const MONTH_LABELS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
+const { width } = Dimensions.get("window");
+
+function decadeLabel(year: number): string {
+  const start = Math.floor(year / 10) * 10;
+  return `${start}–${start + 9}`;
+}
+
+function groupByDecade(yearly: YearlyStats[]) {
+  const map = new Map<string, YearlyStats[]>();
+  for (const y of yearly) {
+    const label = decadeLabel(y.year);
+    const arr = map.get(label) ?? [];
+    arr.push(y);
+    map.set(label, arr);
+  }
+  return [...map.entries()].map(([label, years]) => {
+    const avg = years.reduce((a, y) => a + y.avgTemp, 0) / years.length;
+    const frost = years.reduce((a, y) => a + y.frostDays, 0) / years.length;
+    const precip = years.reduce((a, y) => a + y.precipitation, 0) / years.length;
+    return {
+      label,
+      avg: Number(avg.toFixed(2)),
+      frost: Number(frost.toFixed(1)),
+      precip: Number(precip.toFixed(0)),
+    };
+  });
+}
+
+function extremeYears(yearly: YearlyStats[]) {
+  return [...yearly]
+    .sort((a, b) => Math.abs(b.anomaly) - Math.abs(a.anomaly))
+    .slice(0, 5)
+    .map((y) => ({
+      year: y.year,
+      avgTemp: y.avgTemp,
+      anomaly: y.anomaly,
+      precip: y.precipitation,
+      impact:
+        Math.abs(y.anomaly) >= 1.5
+          ? "critical"
+          : Math.abs(y.anomaly) >= 0.8
+            ? "high"
+            : "medium",
+    }));
+}
+
 const impactColor = (impact: string) => {
-  if (impact === 'critical') return Colors.red;
-  if (impact === 'high') return Colors.amber;
+  if (impact === "critical") return Colors.red;
+  if (impact === "high") return Colors.amber;
   return Colors.blue;
 };
 
-const decadeStats = [
-  { decade: '2004–2009', avg: 9.9, trend: '+0.12°C/yr', crop: 'Stable' },
-  { decade: '2010–2014', avg: 10.6, trend: '+0.18°C/yr', crop: 'Moderate stress' },
-  { decade: '2015–2019', avg: 11.8, trend: '+0.24°C/yr', crop: 'Elevated risk' },
-  { decade: '2020–2024', avg: 13.1, trend: '+0.31°C/yr', crop: 'High adaptation needed' },
-];
-
 export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
-  const [selectedDecade, setSelectedDecade] = useState(3);
+  const farm = useFarmProfile();
+  const { data, loading, error, refreshing } = useClimateHistory(
+    farm.location?.latitude ?? null,
+    farm.location?.longitude ?? null,
+  );
 
-  const latest = temperatureHistory[temperatureHistory.length - 1];
-  const earliest = temperatureHistory[0];
-  const totalAnomaly = (latest.avgTemp - earliest.avgTemp).toFixed(1);
+  const decades = useMemo(
+    () => (data ? groupByDecade(data.yearly) : []),
+    [data],
+  );
+  const extremes = useMemo(
+    () => (data ? extremeYears(data.yearly) : []),
+    [data],
+  );
+
+  const totalWarming = data?.totalWarmingC ?? 0;
+  const latest = data?.yearly[data.yearly.length - 1];
+  const wettestYear = data
+    ? [...data.yearly].sort((a, b) => b.precipitation - a.precipitation)[0]
+    : null;
+
+  const maxMonthlyPrecip = data
+    ? Math.max(...data.byMonth.map((m) => m.precipitation), 1)
+    : 1;
+  const maxMonthlyFrost = data
+    ? Math.max(...data.byMonth.map((m) => m.frostDays), 1)
+    : 1;
 
   return (
     <View style={[styles.root, { backgroundColor: Colors.bg }]}>
@@ -49,397 +125,512 @@ export default function HistoryScreen() {
         style={styles.scroll}
         contentContainerStyle={[
           styles.content,
-          { paddingTop: insets.top + Spacing.md, paddingBottom: insets.bottom + 90 },
+          {
+            paddingTop: insets.top + Spacing.md,
+            paddingBottom: insets.bottom + 90,
+          },
         ]}
         showsVerticalScrollIndicator={false}
       >
         <MotiView
           from={{ opacity: 0, translateY: -20 }}
           animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 600 }}
+          transition={{ type: "timing", duration: 600 }}
           style={styles.header}
         >
           <View style={styles.titleRow}>
             <BarChart2 size={18} color={Colors.green} strokeWidth={2} />
             <Text style={styles.pageTag}>CLIMATE ARCHIVE</Text>
+            {refreshing ? (
+              <ActivityIndicator color={Colors.green} size="small" />
+            ) : null}
           </View>
           <Text style={styles.pageTitle}>Historical Data</Text>
-          <Text style={styles.pageSubtitle}>20-year temperature analysis · Bavaria Region</Text>
+          <Text style={styles.pageSubtitle}>
+            {data
+              ? `${data.rangeEnd - data.rangeStart + 1}-year climate analysis · ${farm.location ? `${farm.location.latitude.toFixed(3)}, ${farm.location.longitude.toFixed(3)}` : "your farm"}`
+              : "Fetching Open-Meteo archive for your farm…"}
+          </Text>
         </MotiView>
 
-        <View style={styles.kpiRow}>
-          {[
-            { label: 'Total Warming', value: `+${totalAnomaly}°C`, color: Colors.red, sub: '2004→2024' },
-            { label: '2024 Average', value: `${latest.avgTemp}°C`, color: Colors.amber, sub: 'Hottest on record' },
-            { label: 'Record High', value: `${latest.maxTemp}°C`, color: Colors.red, sub: 'Summer 2024' },
-          ].map((kpi, i) => (
-            <MotiView
-              key={kpi.label}
-              from={{ opacity: 0, translateY: 24 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 600, delay: 100 + i * 100 }}
-              style={styles.kpiCard}
-            >
-              <BlurView intensity={16} tint="dark" style={styles.kpiInner}>
-                <Text style={[styles.kpiValue, { color: kpi.color }]}>{kpi.value}</Text>
-                <Text style={styles.kpiLabel}>{kpi.label}</Text>
-                <Text style={styles.kpiSub}>{kpi.sub}</Text>
-              </BlurView>
-            </MotiView>
-          ))}
-        </View>
-
-        <MotiView
-          from={{ opacity: 0, translateY: 24 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 700, delay: 300 }}
-        >
-          <WeatherChart />
-        </MotiView>
-
-        <MotiView
-          from={{ opacity: 0, translateY: 24 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 700, delay: 500 }}
-        >
-          <BlurView intensity={16} tint="dark" style={styles.decadeCard}>
-            <Text style={styles.sectionTitle}>Decade Analysis</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.decadeScroll}
-            >
-              {decadeStats.map((d, i) => (
-                <Pressable key={d.decade} onPress={() => setSelectedDecade(i)}>
-                  <MotiView
-                    animate={{
-                      backgroundColor: selectedDecade === i ? Colors.greenDim : Colors.bgCardAlt,
-                      borderColor: selectedDecade === i ? Colors.border : Colors.borderSubtle,
-                    }}
-                    transition={{ type: 'timing', duration: 200 }}
-                    style={styles.decadeChip}
-                  >
-                    <Text style={[styles.decadeYear, { color: selectedDecade === i ? Colors.green : Colors.textSecondary }]}>
-                      {d.decade}
-                    </Text>
-                    <Text style={[styles.decadeAvg, { color: Colors.textPrimary }]}>{d.avg}°C</Text>
-                    <Text style={[styles.decadeTrend, { color: Colors.amber }]}>{d.trend}</Text>
-                    <Text style={[styles.decadeCrop, { color: Colors.textSecondary }]}>{d.crop}</Text>
-                  </MotiView>
-                </Pressable>
-              ))}
-            </ScrollView>
+        {!farm.loading && !farm.location ? (
+          <BlurView intensity={16} tint="dark" style={styles.emptyCard}>
+            <Text style={styles.emptyText}>
+              Finish onboarding (pin your farm location) to see 20 years of
+              historical climate data for your field.
+            </Text>
           </BlurView>
-        </MotiView>
-
-        <MotiView
-          from={{ opacity: 0, translateY: 24 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 700, delay: 650 }}
-        >
-          <BlurView intensity={16} tint="dark" style={styles.eventsCard}>
-            <View style={styles.eventsHeader}>
-              <AlertCircle size={16} color={Colors.amber} strokeWidth={2} />
-              <Text style={styles.sectionTitle}>Extreme Climate Events</Text>
-            </View>
-            <View style={styles.eventsList}>
-              {climateEvents.map((ev, i) => (
+        ) : loading && !data ? (
+          <BlurView intensity={16} tint="dark" style={styles.loadingCard}>
+            <ActivityIndicator color={Colors.green} size="large" />
+            <Text style={styles.loadingText}>
+              Loading 20 years of archive data…
+            </Text>
+            <Text style={styles.loadingSub}>
+              First run can take ~10s. Cached for 24h afterwards.
+            </Text>
+          </BlurView>
+        ) : error && !data ? (
+          <BlurView intensity={16} tint="dark" style={styles.emptyCard}>
+            <Text style={styles.errorText}>{error}</Text>
+          </BlurView>
+        ) : data ? (
+          <>
+            <View style={styles.kpiRow}>
+              {[
+                {
+                  label: "Total Warming",
+                  value: `${totalWarming > 0 ? "+" : ""}${totalWarming}°C`,
+                  color: totalWarming >= 0 ? Colors.red : Colors.blue,
+                  sub: `${data.rangeStart}→${data.rangeEnd}`,
+                },
+                {
+                  label: `${latest?.year ?? ""} Avg`,
+                  value: `${latest?.avgTemp ?? "—"}°C`,
+                  color: Colors.amber,
+                  sub: `${latest?.frostDays ?? 0} frost days`,
+                },
+                {
+                  label: "Wettest Year",
+                  value: `${wettestYear?.precipitation ?? 0}mm`,
+                  color: Colors.blue,
+                  sub: `${wettestYear?.year ?? ""}`,
+                },
+              ].map((kpi, i) => (
                 <MotiView
-                  key={ev.year}
-                  from={{ opacity: 0, translateX: -16 }}
-                  animate={{ opacity: 1, translateX: 0 }}
-                  transition={{ type: 'timing', duration: 500, delay: 700 + i * 100 }}
-                  style={styles.eventItem}
+                  key={kpi.label}
+                  from={{ opacity: 0, translateY: 24 }}
+                  animate={{ opacity: 1, translateY: 0 }}
+                  transition={{
+                    type: "timing",
+                    duration: 600,
+                    delay: 100 + i * 100,
+                  }}
+                  style={styles.kpiCard}
                 >
-                  <View style={[styles.eventYearBadge, { backgroundColor: impactColor(ev.impact) + '1A', borderColor: impactColor(ev.impact) + '44' }]}>
-                    <Text style={[styles.eventYear, { color: impactColor(ev.impact) }]}>{ev.year}</Text>
-                  </View>
-                  <View style={styles.eventInfo}>
-                    <Text style={styles.eventName}>{ev.event}</Text>
-                    <View style={styles.eventMeta}>
-                      <Text style={[styles.eventAnomaly, { color: impactColor(ev.impact) }]}>{ev.tempAnomaly}</Text>
-                      <Text style={styles.eventDot}>·</Text>
-                      <Text style={styles.eventLoss}>Loss: {ev.loss}</Text>
-                    </View>
-                  </View>
-                  <View style={[styles.impactBadge, { backgroundColor: impactColor(ev.impact) + '1A' }]}>
-                    <Text style={[styles.impactLabel, { color: impactColor(ev.impact) }]}>{ev.impact}</Text>
-                  </View>
+                  <BlurView intensity={16} tint="dark" style={styles.kpiInner}>
+                    <Text style={[styles.kpiValue, { color: kpi.color }]}>
+                      {kpi.value}
+                    </Text>
+                    <Text style={styles.kpiLabel}>{kpi.label}</Text>
+                    <Text style={styles.kpiSub}>{kpi.sub}</Text>
+                  </BlurView>
                 </MotiView>
               ))}
             </View>
-          </BlurView>
-        </MotiView>
 
-        <MotiView
-          from={{ opacity: 0, translateY: 24 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 600, delay: 900 }}
-        >
-          <BlurView intensity={16} tint="dark" style={styles.projectionCard}>
-            <View style={styles.projectionHeader}>
-              <TrendingUp size={16} color={Colors.red} strokeWidth={2} />
-              <Text style={styles.sectionTitle}>2030 Climate Projection</Text>
-            </View>
-            <View style={styles.projectionGrid}>
-              {[
-                { label: 'Avg Temperature', current: '14.2°C', proj: '15.8°C', delta: '+1.6°C' },
-                { label: 'Frost-Free Days', current: '198 days', proj: '217 days', delta: '+19 days' },
-                { label: 'Dry Spell Risk', current: 'Moderate', proj: 'High', delta: '↑' },
-                { label: 'Yield Adaptation', current: 'Standard', proj: 'Needed', delta: '⚠️' },
-              ].map((item, i) => (
-                <View key={item.label} style={styles.projRow}>
-                  <Text style={styles.projLabel}>{item.label}</Text>
-                  <Text style={styles.projCurrent}>{item.current}</Text>
-                  <Text style={styles.projArrow}>→</Text>
-                  <Text style={[styles.projFuture, { color: Colors.amber }]}>{item.proj}</Text>
-                  <Text style={[styles.projDelta, { color: Colors.red }]}>{item.delta}</Text>
+            <MotiView
+              from={{ opacity: 0, translateY: 24 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: "timing", duration: 700, delay: 300 }}
+            >
+              <ClimateHistoryChart
+                yearly={data.yearly}
+                rangeStart={data.rangeStart}
+                rangeEnd={data.rangeEnd}
+              />
+            </MotiView>
+
+            <MotiView
+              from={{ opacity: 0, translateY: 24 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: "timing", duration: 700, delay: 400 }}
+            >
+              <BlurView intensity={16} tint="dark" style={styles.monthlyCard}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Monthly Climate</Text>
+                  <Text style={styles.sectionSub}>
+                    Avg across {data.rangeEnd - data.rangeStart + 1} years
+                  </Text>
                 </View>
-              ))}
-            </View>
-          </BlurView>
-        </MotiView>
+                <View style={styles.monthlyTable}>
+                  <View style={styles.monthlyHeaderRow}>
+                    <Text style={[styles.monthlyHeader, { flex: 0.8 }]}>
+                      MONTH
+                    </Text>
+                    <Text style={[styles.monthlyHeader, { flex: 1 }]}>
+                      AVG °C
+                    </Text>
+                    <Text style={[styles.monthlyHeader, { flex: 1.6 }]}>
+                      RAINFALL
+                    </Text>
+                    <Text style={[styles.monthlyHeader, { flex: 1.6 }]}>
+                      FROST
+                    </Text>
+                  </View>
+                  {data.byMonth.map((m) => (
+                    <View key={m.month} style={styles.monthlyRow}>
+                      <Text style={[styles.monthlyCell, { flex: 0.8 }]}>
+                        {MONTH_LABELS[m.month - 1]}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.monthlyCell,
+                          { flex: 1, color: Colors.textPrimary },
+                        ]}
+                      >
+                        {m.avgTemp.toFixed(1)}
+                      </Text>
+                      <View style={[styles.monthlyBarWrap, { flex: 1.6 }]}>
+                        <View
+                          style={[
+                            styles.monthlyBar,
+                            {
+                              width: `${Math.min(
+                                100,
+                                (m.precipitation / maxMonthlyPrecip) * 100,
+                              )}%`,
+                              backgroundColor: "#60a5fa" + "cc",
+                            },
+                          ]}
+                        />
+                        <Text style={styles.monthlyValue}>
+                          {m.precipitation.toFixed(0)} mm
+                        </Text>
+                      </View>
+                      <View style={[styles.monthlyBarWrap, { flex: 1.6 }]}>
+                        <View
+                          style={[
+                            styles.monthlyBar,
+                            {
+                              width: `${Math.min(
+                                100,
+                                (m.frostDays / maxMonthlyFrost) * 100,
+                              )}%`,
+                              backgroundColor: "#a855f7" + "cc",
+                            },
+                          ]}
+                        />
+                        <Text style={styles.monthlyValue}>
+                          {m.frostDays.toFixed(1)} d
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </BlurView>
+            </MotiView>
+
+            <MotiView
+              from={{ opacity: 0, translateY: 24 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: "timing", duration: 700, delay: 500 }}
+            >
+              <BlurView intensity={16} tint="dark" style={styles.decadeCard}>
+                <View style={styles.sectionHeader}>
+                  <TrendingUp size={16} color={Colors.amber} strokeWidth={2} />
+                  <Text style={styles.sectionTitle}>Decade Comparison</Text>
+                </View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.decadeScroll}
+                >
+                  {decades.map((d) => (
+                    <View key={d.label} style={styles.decadeChip}>
+                      <Text style={styles.decadeYear}>{d.label}</Text>
+                      <Text style={styles.decadeAvg}>{d.avg}°C</Text>
+                      <View style={styles.decadeMetaRow}>
+                        <Snowflake
+                          size={10}
+                          color={Colors.blue}
+                          strokeWidth={2}
+                        />
+                        <Text style={styles.decadeMeta}>{d.frost} d/yr</Text>
+                      </View>
+                      <Text style={styles.decadeMeta}>{d.precip} mm/yr</Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              </BlurView>
+            </MotiView>
+
+            <MotiView
+              from={{ opacity: 0, translateY: 24 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: "timing", duration: 700, delay: 650 }}
+            >
+              <BlurView intensity={16} tint="dark" style={styles.eventsCard}>
+                <View style={styles.sectionHeader}>
+                  <AlertCircle size={16} color={Colors.amber} strokeWidth={2} />
+                  <Text style={styles.sectionTitle}>Extreme Years</Text>
+                  <Text style={styles.sectionSub}>
+                    Top 5 by |anomaly| vs baseline
+                  </Text>
+                </View>
+                <View style={styles.eventsList}>
+                  {extremes.map((ev) => (
+                    <View key={ev.year} style={styles.eventItem}>
+                      <View
+                        style={[
+                          styles.eventYearBadge,
+                          {
+                            backgroundColor: impactColor(ev.impact) + "1A",
+                            borderColor: impactColor(ev.impact) + "44",
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.eventYear,
+                            { color: impactColor(ev.impact) },
+                          ]}
+                        >
+                          {ev.year}
+                        </Text>
+                      </View>
+                      <View style={styles.eventInfo}>
+                        <Text style={styles.eventName}>
+                          {ev.anomaly >= 0 ? "Warmer" : "Cooler"} than baseline
+                        </Text>
+                        <View style={styles.eventMeta}>
+                          <Text
+                            style={[
+                              styles.eventAnomaly,
+                              { color: impactColor(ev.impact) },
+                            ]}
+                          >
+                            {ev.anomaly > 0 ? "+" : ""}
+                            {ev.anomaly.toFixed(1)}°C
+                          </Text>
+                          <Text style={styles.eventDot}>·</Text>
+                          <Text style={styles.eventLoss}>
+                            {ev.avgTemp}°C avg · {ev.precip} mm
+                          </Text>
+                        </View>
+                      </View>
+                      <View
+                        style={[
+                          styles.impactBadge,
+                          { backgroundColor: impactColor(ev.impact) + "1A" },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.impactLabel,
+                            { color: impactColor(ev.impact) },
+                          ]}
+                        >
+                          {ev.impact}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </BlurView>
+            </MotiView>
+          </>
+        ) : null}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: Spacing.lg,
-    paddingHorizontal: Spacing.md,
-  },
-  header: {
-    gap: 4,
-  },
+  root: { flex: 1 },
+  scroll: { flex: 1 },
+  content: { gap: Spacing.lg, paddingHorizontal: Spacing.md },
+  header: { gap: 4 },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     marginBottom: 2,
   },
   pageTag: {
     fontSize: FontSize.xs,
     color: Colors.green,
-    fontWeight: '800',
+    fontWeight: "800",
     letterSpacing: 1.5,
   },
   pageTitle: {
     fontSize: FontSize.xxl,
     color: Colors.textPrimary,
-    fontWeight: '800',
-    letterSpacing: -0.8,
+    fontWeight: "900",
   },
   pageSubtitle: {
     fontSize: FontSize.sm,
     color: Colors.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
-  kpiRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  kpiCard: {
-    flex: 1,
-    borderRadius: Radius.lg,
-    overflow: 'hidden',
-    shadowColor: Colors.green,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-  },
+  kpiRow: { flexDirection: "row", gap: Spacing.sm },
+  kpiCard: { flex: 1, borderRadius: Radius.lg, overflow: "hidden" },
   kpiInner: {
     padding: Spacing.md,
+    gap: 4,
     borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.border,
-    gap: 3,
-    overflow: 'hidden',
-    alignItems: 'center',
   },
-  kpiValue: {
-    fontSize: FontSize.xl,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-  },
+  kpiValue: { fontSize: FontSize.lg, fontWeight: "900", letterSpacing: -0.4 },
   kpiLabel: {
     fontSize: FontSize.xs,
     color: Colors.textSecondary,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
-  kpiSub: {
-    fontSize: 10,
-    color: Colors.textMuted,
-    textAlign: 'center',
+  kpiSub: { fontSize: FontSize.xs, color: Colors.textMuted, fontWeight: "500" },
+  loadingCard: {
+    alignItems: "center",
+    gap: 10,
+    padding: Spacing.xl,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: "hidden",
+  },
+  loadingText: {
+    fontSize: FontSize.base,
+    color: Colors.textPrimary,
+    fontWeight: "700",
+    marginTop: 6,
+  },
+  loadingSub: { fontSize: FontSize.sm, color: Colors.textMuted },
+  emptyCard: {
+    padding: Spacing.xl,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: "hidden",
+  },
+  emptyText: {
+    fontSize: FontSize.sm,
+    color: Colors.textSecondary,
+    fontWeight: "500",
+  },
+  errorText: {
+    fontSize: FontSize.sm,
+    color: Colors.red,
+    fontWeight: "600",
+  },
+  monthlyCard: {
+    padding: Spacing.lg,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: "hidden",
+    gap: Spacing.sm,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
   },
   sectionTitle: {
     fontSize: FontSize.base,
     color: Colors.textPrimary,
-    fontWeight: '700',
+    fontWeight: "800",
+  },
+  sectionSub: { fontSize: FontSize.xs, color: Colors.textMuted, fontWeight: "600" },
+  monthlyTable: { gap: 6 },
+  monthlyHeaderRow: { flexDirection: "row", gap: 8 },
+  monthlyHeader: {
+    fontSize: FontSize.xs,
+    color: Colors.textMuted,
+    fontWeight: "800",
+    letterSpacing: 0.6,
+  },
+  monthlyRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  monthlyCell: {
+    fontSize: FontSize.sm,
+    color: Colors.textSecondary,
+    fontWeight: "700",
+  },
+  monthlyBarWrap: {
+    position: "relative",
+    height: 20,
+    justifyContent: "center",
+    backgroundColor: Colors.bgCardAlt,
+    borderRadius: 6,
+    overflow: "hidden",
+  },
+  monthlyBar: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 6,
+  },
+  monthlyValue: {
+    position: "absolute",
+    right: 6,
+    fontSize: FontSize.xs,
+    color: Colors.textPrimary,
+    fontWeight: "700",
   },
   decadeCard: {
+    padding: Spacing.lg,
     borderRadius: Radius.xl,
     borderWidth: 1,
     borderColor: Colors.border,
-    padding: Spacing.lg,
-    gap: Spacing.md,
-    overflow: 'hidden',
-  },
-  decadeScroll: {
-    flexDirection: 'row',
+    overflow: "hidden",
     gap: Spacing.sm,
   },
+  decadeScroll: { gap: Spacing.sm, paddingVertical: Spacing.xs },
   decadeChip: {
+    minWidth: width * 0.32,
     padding: Spacing.md,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    backgroundColor: Colors.bgCardAlt,
     gap: 4,
-    minWidth: 150,
   },
   decadeYear: {
     fontSize: FontSize.xs,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    color: Colors.textSecondary,
+    fontWeight: "700",
+    letterSpacing: 0.4,
   },
   decadeAvg: {
-    fontSize: FontSize.xl,
-    fontWeight: '800',
-    letterSpacing: -0.5,
+    fontSize: FontSize.lg,
+    color: Colors.textPrimary,
+    fontWeight: "900",
   },
-  decadeTrend: {
-    fontSize: FontSize.sm,
-    fontWeight: '600',
-  },
-  decadeCrop: {
+  decadeMetaRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  decadeMeta: {
     fontSize: FontSize.xs,
-    fontWeight: '500',
+    color: Colors.textMuted,
+    fontWeight: "700",
   },
   eventsCard: {
+    padding: Spacing.lg,
     borderRadius: Radius.xl,
     borderWidth: 1,
     borderColor: Colors.border,
-    padding: Spacing.lg,
-    gap: Spacing.md,
-    overflow: 'hidden',
-  },
-  eventsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  eventsList: {
-    gap: 12,
-  },
-  eventItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    overflow: "hidden",
     gap: Spacing.sm,
   },
+  eventsList: { gap: 8 },
+  eventItem: { flexDirection: "row", alignItems: "center", gap: 10 },
   eventYearBadge: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingVertical: 6,
+    borderRadius: Radius.md,
     borderWidth: 1,
   },
-  eventYear: {
-    fontSize: FontSize.sm,
-    fontWeight: '800',
-  },
-  eventInfo: {
-    flex: 1,
-    gap: 2,
-  },
+  eventYear: { fontSize: FontSize.sm, fontWeight: "800" },
+  eventInfo: { flex: 1, gap: 2 },
   eventName: {
     fontSize: FontSize.sm,
     color: Colors.textPrimary,
-    fontWeight: '600',
+    fontWeight: "700",
   },
-  eventMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  eventAnomaly: {
-    fontSize: FontSize.xs,
-    fontWeight: '700',
-  },
-  eventDot: {
-    color: Colors.textMuted,
-    fontSize: FontSize.xs,
-  },
-  eventLoss: {
-    fontSize: FontSize.xs,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
+  eventMeta: { flexDirection: "row", alignItems: "center", gap: 6 },
+  eventAnomaly: { fontSize: FontSize.xs, fontWeight: "800" },
+  eventDot: { fontSize: FontSize.xs, color: Colors.textMuted },
+  eventLoss: { fontSize: FontSize.xs, color: Colors.textMuted, fontWeight: "600" },
   impactBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingVertical: 4,
+    borderRadius: Radius.sm,
   },
   impactLabel: {
     fontSize: FontSize.xs,
-    fontWeight: '700',
-    textTransform: 'capitalize',
-  },
-  projectionCard: {
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    padding: Spacing.lg,
-    gap: Spacing.md,
-    overflow: 'hidden',
-  },
-  projectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  projectionGrid: {
-    gap: 12,
-  },
-  projRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
-  },
-  projLabel: {
-    fontSize: FontSize.sm,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-    flex: 1.2,
-  },
-  projCurrent: {
-    fontSize: FontSize.sm,
-    color: Colors.textSecondary,
-    fontWeight: '600',
-    flex: 1,
-  },
-  projArrow: {
-    color: Colors.textMuted,
-    fontWeight: '600',
-  },
-  projFuture: {
-    fontSize: FontSize.sm,
-    fontWeight: '700',
-    flex: 1,
-  },
-  projDelta: {
-    fontSize: FontSize.sm,
-    fontWeight: '800',
-    minWidth: 40,
-    textAlign: 'right',
+    fontWeight: "800",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
   },
 });
