@@ -3,6 +3,7 @@ import { DiseaseRiskCard } from "@/components/DiseaseRiskCard";
 import { FieldStatsCard } from "@/components/FieldStatsCard";
 import { FrostPredictionCard } from "@/components/FrostPredictionCard";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { NDVICard } from "@/components/NDVICard";
 import { PredictionCard } from "@/components/PredictionCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { predictions } from "@/constants/mockData";
@@ -11,6 +12,7 @@ import { useDiseaseRisks } from "@/hooks/useDiseaseRisks";
 import { useFarmProfile } from "@/hooks/useFarmProfile";
 import { useFrostPrediction } from "@/hooks/useFrostPrediction";
 import { useIrrigation } from "@/hooks/useIrrigation";
+import { useNdvi } from "@/hooks/useNdvi";
 import { useWeather } from "@/hooks/useWeather";
 import {
   getWeatherDescription,
@@ -123,6 +125,11 @@ export default function DashboardScreen() {
     loading: diseasesLoading,
     error: diseasesError,
   } = useDiseaseRisks(farmLat, farmLon, farmCropIds);
+  const {
+    data: ndvi,
+    loading: ndviLoading,
+    error: ndviError,
+  } = useNdvi(farmLat, farmLon);
 
   const liveFieldStats = weather
     ? [
@@ -592,6 +599,30 @@ export default function DashboardScreen() {
             ))}
           </View>
         ) : null}
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{t("dashboard.satellite_ndvi")}</Text>
+          <View
+            style={[
+              styles.aiBadge,
+              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
+            ]}
+          >
+            <Text style={[styles.aiLabel, { color: Colors.green }]}>
+              {t("dashboard.badge_sentinel_2")}
+            </Text>
+          </View>
+        </View>
+
+        <NDVICard
+          data={ndvi}
+          loading={ndviLoading || farm.loading}
+          error={
+            ndviError ??
+            (!farm.loading && !farm.location ? t("ndvi.empty") : null)
+          }
+          delay={400}
+        />
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t("dashboard.field_statistics")}</Text>

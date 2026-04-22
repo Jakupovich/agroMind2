@@ -67,6 +67,8 @@
     "smart_irrigation": "Pametno navodnjavanje",
     "frost_prediction": "Prognoza mraza (AI)",
     "disease_pest_risk": "Rizik od bolesti i \u0161teto\u010dina",
+    "satellite_ndvi": "Satelitski NDVI",
+    "badge_sentinel_2": "Sentinel-2",
     "field_statistics": "Statistika polja",
     "top_recommendation": "Glavna AI preporuka",
     "alerts": "Upozorenja",
@@ -105,6 +107,18 @@
     "risk_low": "Nisko",
     "risk_moderate": "Umjereno",
     "risk_high": "Visoko"
+  },
+  "ndvi": {
+    "title": "Satelitski NDVI",
+    "subtitle": "Zadnji Sentinel-2 pogled na tvoje polje",
+    "scene_date": "Snimak",
+    "loading": "Dohvaćam Sentinel-2 snimak…",
+    "mean": "Prosječni NDVI",
+    "range": "Raspon",
+    "valid_pixels": "Bistri pikseli",
+    "patch_label": "Krpa",
+    "provider": "Sentinel-2 · CDSE",
+    "empty": "Završi onboarding i postavi pin farme da bismo povukli satelitski snimak."
   },
   "history": {
     "title": "KLIMATSKA ARHIVA",

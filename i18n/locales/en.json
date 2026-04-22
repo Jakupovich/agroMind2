@@ -67,6 +67,8 @@
     "smart_irrigation": "Smart Irrigation",
     "frost_prediction": "Frost Prediction AI",
     "disease_pest_risk": "Disease & Pest Risk",
+    "satellite_ndvi": "Satellite NDVI",
+    "badge_sentinel_2": "Sentinel-2",
     "field_statistics": "Field Statistics",
     "top_recommendation": "Top AI Recommendation",
     "alerts": "Alerts",
@@ -105,6 +107,18 @@
     "risk_low": "Low",
     "risk_moderate": "Moderate",
     "risk_high": "High"
+  },
+  "ndvi": {
+    "title": "Satellite NDVI",
+    "subtitle": "Latest Sentinel-2 look at your field",
+    "scene_date": "Scene",
+    "loading": "Fetching Sentinel-2 imagery…",
+    "mean": "Mean NDVI",
+    "range": "Range",
+    "valid_pixels": "Clear pixels",
+    "patch_label": "Patch",
+    "provider": "Sentinel-2 · CDSE",
+    "empty": "Finish onboarding to pin your farm location so we can pull satellite imagery."
   },
   "history": {
     "title": "CLIMATE ARCHIVE",
