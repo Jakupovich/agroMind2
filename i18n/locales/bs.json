@@ -95,7 +95,10 @@
     "gpt_advisor": "GPT savjetnik",
     "confidence": "Pouzdanost",
     "model_auc": "Model AUC",
-    "window": "Prozor"
+    "window": "Prozor",
+    "light_green": "Sigurno za sjetvu",
+    "light_yellow": "Pratite pažljivo",
+    "light_red": "Odgodite sjetvu"
   },
   "disease": {
     "prevention": "Prevencija",

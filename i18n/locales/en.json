@@ -95,7 +95,10 @@
     "gpt_advisor": "GPT advisor",
     "confidence": "Confidence",
     "model_auc": "Model AUC",
-    "window": "Window"
+    "window": "Window",
+    "light_green": "Safe to plant",
+    "light_yellow": "Monitor closely",
+    "light_red": "Delay planting"
   },
   "disease": {
     "prevention": "Prevention",

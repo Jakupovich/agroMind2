@@ -91,7 +91,7 @@ export function FrostPredictionCard({
           >
             <StatusIcon size={12} color={color} strokeWidth={2.5} />
             <Text style={[styles.badgeText, { color }]}>
-              {t(`common.${trafficLightLabel(light).toLowerCase()}`, {
+              {t(`frost.light_${light}`, {
                 defaultValue: trafficLightLabel(light),
               }).toUpperCase()}
             </Text>
