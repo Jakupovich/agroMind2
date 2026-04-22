@@ -2,6 +2,7 @@ import { ClimateScoreCard } from "@/components/ClimateScoreCard";
 import { DiseaseRiskCard } from "@/components/DiseaseRiskCard";
 import { FieldStatsCard } from "@/components/FieldStatsCard";
 import { FrostPredictionCard } from "@/components/FrostPredictionCard";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { PredictionCard } from "@/components/PredictionCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { predictions } from "@/constants/mockData";
@@ -33,6 +34,7 @@ import {
 } from "lucide-react-native";
 import { MotiView } from "moti";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -83,6 +85,7 @@ function toAgroPredictCropId(label: string): string {
 
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
 
   const [notifCount] = useState(3);
@@ -272,6 +275,7 @@ export default function DashboardScreen() {
                 </View>
               ) : null}
             </Pressable>
+            <LanguageToggle />
           </View>
         </MotiView>
 
@@ -283,9 +287,9 @@ export default function DashboardScreen() {
         >
           <View style={styles.greetingRow}>
             <Leaf size={18} color={Colors.green} strokeWidth={2} />
-            <Text style={styles.greetingTag}>AGRO-PREDICT AI</Text>
+            <Text style={styles.greetingTag}>{t("dashboard.greeting_tag")}</Text>
           </View>
-          <Text style={styles.greeting}>Good Morning, Klaus</Text>
+          <Text style={styles.greeting}>{t("dashboard.greeting")}</Text>
           <View style={styles.greetingMetaRow}>
             <Text style={styles.greetingSub}>
               Tuesday, April 15 · Spring Planting Season
@@ -326,7 +330,7 @@ export default function DashboardScreen() {
               <View style={styles.lwHeader}>
                 <View style={styles.lwTitleRow}>
                   <CloudSun size={14} color={Colors.green} strokeWidth={2} />
-                  <Text style={styles.lwTitle}>Live Weather</Text>
+                  <Text style={styles.lwTitle}>{t("dashboard.live_weather")}</Text>
                   <View
                     style={[
                       styles.lwLiveDot,
@@ -428,7 +432,7 @@ export default function DashboardScreen() {
           >
             <ActivityIndicator color={Colors.green} />
             <Text style={[styles.lwLabel, { marginTop: 8 }]}>
-              Fetching live weather…
+              {t("common.loading")}
             </Text>
           </BlurView>
         ) : null}
@@ -485,7 +489,7 @@ export default function DashboardScreen() {
         />
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Smart Irrigation</Text>
+          <Text style={styles.sectionTitle}>{t("dashboard.smart_irrigation")}</Text>
           <Droplets size={16} color={Colors.textSecondary} strokeWidth={1.8} />
         </View>
         <SmartIrrigationCard
@@ -494,14 +498,14 @@ export default function DashboardScreen() {
           error={
             irrigationError ??
             (!farm.loading && !farm.location
-              ? "Finish onboarding to pick your farm location."
+              ? t("dashboard.empty_irrigation")
               : null)
           }
           delay={350}
         />
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Frost Prediction AI</Text>
+          <Text style={styles.sectionTitle}>{t("dashboard.frost_prediction")}</Text>
           <View
             style={[
               styles.aiBadge,
@@ -510,7 +514,7 @@ export default function DashboardScreen() {
           >
             <Snowflake size={11} color={Colors.green} strokeWidth={2.2} />
             <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              Agro-Predict
+              {t("dashboard.badge_agropredict")}
             </Text>
           </View>
         </View>
@@ -519,14 +523,13 @@ export default function DashboardScreen() {
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <ActivityIndicator color={Colors.green} />
             <Text style={styles.frostLoadingText}>
-              Running frost risk model for your field…
+              {t("dashboard.loading_frost")}
             </Text>
           </BlurView>
         ) : !farm.location || farmCropIds.length === 0 ? (
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <Text style={styles.frostEmptyText}>
-              Finish onboarding (map pin + at least one crop) to see frost
-              predictions here.
+              {t("dashboard.empty_frost")}
             </Text>
           </BlurView>
         ) : frostError && !frost ? (
@@ -547,7 +550,7 @@ export default function DashboardScreen() {
         ) : null}
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Disease & Pest Risk</Text>
+          <Text style={styles.sectionTitle}>{t("dashboard.disease_pest_risk")}</Text>
           <View
             style={[
               styles.aiBadge,
@@ -556,7 +559,7 @@ export default function DashboardScreen() {
           >
             <Sprout size={11} color={Colors.green} strokeWidth={2.2} />
             <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              AgroMind AI
+              {t("dashboard.badge_agromind_ai")}
             </Text>
           </View>
         </View>
@@ -565,14 +568,13 @@ export default function DashboardScreen() {
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <ActivityIndicator color={Colors.green} />
             <Text style={styles.frostLoadingText}>
-              Running disease & pest risk models for your field…
+              {t("dashboard.loading_disease")}
             </Text>
           </BlurView>
         ) : !farm.location || farmCropIds.length === 0 ? (
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <Text style={styles.frostEmptyText}>
-              Finish onboarding (map pin + at least one crop) to see disease &
-              pest risk here.
+              {t("dashboard.empty_disease")}
             </Text>
           </BlurView>
         ) : diseasesError && !diseases ? (
@@ -592,7 +594,7 @@ export default function DashboardScreen() {
         ) : null}
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Field Statistics</Text>
+          <Text style={styles.sectionTitle}>{t("dashboard.field_statistics")}</Text>
           <CloudSun size={16} color={Colors.textSecondary} strokeWidth={1.8} />
         </View>
 

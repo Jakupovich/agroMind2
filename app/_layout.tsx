@@ -6,12 +6,16 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/theme';
+import { initI18n } from '@/i18n';
 
 function AppGate() {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem('onboarding_complete').then((val) => {
+    Promise.all([
+      initI18n(),
+      AsyncStorage.getItem('onboarding_complete'),
+    ]).then(([, val]) => {
       setChecked(true);
       if (!val) {
         router.replace('/onboarding');
