@@ -86,3 +86,75 @@ async def fetch_weekly_forecast(latitude: float, longitude: float) -> WeeklyFore
         longitude=float(payload.get("longitude", longitude)),
         days=days,
     )
+
+
+@dataclass
+class HourlyForecast:
+    """Hourly weather window used by disease/pest risk models."""
+
+    latitude: float
+    longitude: float
+    times: list[str]
+    temperature_2m: list[float]
+    relative_humidity_2m: list[float]
+    precipitation: list[float]
+
+
+async def fetch_hourly_forecast(
+    latitude: float,
+    longitude: float,
+    forecast_days: int = 7,
+) -> HourlyForecast:
+    """Fetch an hourly forecast from Open-Meteo.
+
+    Disease risk models (Smith periods, TOMCAST DSV, Septoria, rust) all
+    depend on hourly relative humidity and precipitation — specifically
+    the number of consecutive hours the canopy stays wet. Those cannot be
+    derived from daily aggregates, so this is a separate API call.
+    """
+    settings = get_settings()
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": ",".join(
+            [
+                "temperature_2m",
+                "relative_humidity_2m",
+                "precipitation",
+            ]
+        ),
+        "forecast_days": forecast_days,
+        "timezone": "auto",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=settings.http_timeout_seconds) as client:
+            response = await client.get(settings.open_meteo_base_url, params=params)
+            response.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Failed to fetch hourly weather data from Open-Meteo: {exc}",
+        ) from exc
+
+    payload = response.json()
+    hourly = payload.get("hourly") or {}
+    times: list[str] = hourly.get("time") or []
+    if not times:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Open-Meteo returned no hourly forecast data.",
+        )
+
+    def _as_floats(key: str) -> list[float]:
+        raw = hourly.get(key) or []
+        return [float(v if v is not None else 0.0) for v in raw]
+
+    return HourlyForecast(
+        latitude=float(payload.get("latitude", latitude)),
+        longitude=float(payload.get("longitude", longitude)),
+        times=times,
+        temperature_2m=_as_floats("temperature_2m"),
+        relative_humidity_2m=_as_floats("relative_humidity_2m"),
+        precipitation=_as_floats("precipitation"),
+    )

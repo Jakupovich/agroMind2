@@ -1,10 +1,12 @@
 import { ClimateScoreCard } from "@/components/ClimateScoreCard";
+import { DiseaseRiskCard } from "@/components/DiseaseRiskCard";
 import { FieldStatsCard } from "@/components/FieldStatsCard";
 import { FrostPredictionCard } from "@/components/FrostPredictionCard";
 import { PredictionCard } from "@/components/PredictionCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { predictions } from "@/constants/mockData";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
+import { useDiseaseRisks } from "@/hooks/useDiseaseRisks";
 import { useFarmProfile } from "@/hooks/useFarmProfile";
 import { useFrostPrediction } from "@/hooks/useFrostPrediction";
 import { useIrrigation } from "@/hooks/useIrrigation";
@@ -24,6 +26,7 @@ import {
   MapPin,
   RefreshCw,
   Snowflake,
+  Sprout,
   Sun,
   Thermometer,
   Wind,
@@ -112,6 +115,11 @@ export default function DashboardScreen() {
     loading: frostLoading,
     error: frostError,
   } = useFrostPrediction(farmLat, farmLon, farmCropIds);
+  const {
+    data: diseases,
+    loading: diseasesLoading,
+    error: diseasesError,
+  } = useDiseaseRisks(farmLat, farmLon, farmCropIds);
 
   const liveFieldStats = weather
     ? [
@@ -532,6 +540,51 @@ export default function DashboardScreen() {
                 key={pred.crop.id}
                 prediction={pred}
                 gptEnabled={frost.gpt_enabled}
+                delay={400 + i * 120}
+              />
+            ))}
+          </View>
+        ) : null}
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Disease & Pest Risk</Text>
+          <View
+            style={[
+              styles.aiBadge,
+              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
+            ]}
+          >
+            <Sprout size={11} color={Colors.green} strokeWidth={2.2} />
+            <Text style={[styles.aiLabel, { color: Colors.green }]}>
+              AgroMind AI
+            </Text>
+          </View>
+        </View>
+
+        {farm.loading || diseasesLoading ? (
+          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
+            <ActivityIndicator color={Colors.green} />
+            <Text style={styles.frostLoadingText}>
+              Running disease & pest risk models for your field…
+            </Text>
+          </BlurView>
+        ) : !farm.location || farmCropIds.length === 0 ? (
+          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
+            <Text style={styles.frostEmptyText}>
+              Finish onboarding (map pin + at least one crop) to see disease &
+              pest risk here.
+            </Text>
+          </BlurView>
+        ) : diseasesError && !diseases ? (
+          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
+            <Text style={styles.frostErrorText}>{diseasesError}</Text>
+          </BlurView>
+        ) : diseases && diseases.length > 0 ? (
+          <View style={styles.frostList}>
+            {diseases.map((report, i) => (
+              <DiseaseRiskCard
+                key={report.crop}
+                report={report}
                 delay={400 + i * 120}
               />
             ))}

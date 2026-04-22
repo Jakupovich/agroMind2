@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.routes import irrigation_router
+from app.routes import disease_router, irrigation_router
 
 
 def create_app() -> FastAPI:
@@ -25,6 +25,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(irrigation_router)
+    app.include_router(disease_router)
 
     @app.get("/health", tags=["health"], summary="Health check")
     async def health() -> dict[str, str]:
