@@ -1,10 +1,12 @@
 import { ClimateScoreCard } from "@/components/ClimateScoreCard";
 import { FieldStatsCard } from "@/components/FieldStatsCard";
+import { FrostPredictionCard } from "@/components/FrostPredictionCard";
 import { PredictionCard } from "@/components/PredictionCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { predictions } from "@/constants/mockData";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
 import { useFarmProfile } from "@/hooks/useFarmProfile";
+import { useFrostPrediction } from "@/hooks/useFrostPrediction";
 import { useIrrigation } from "@/hooks/useIrrigation";
 import { useWeather } from "@/hooks/useWeather";
 import {
@@ -21,6 +23,7 @@ import {
   Leaf,
   MapPin,
   RefreshCw,
+  Snowflake,
   Sun,
   Thermometer,
   Wind,
@@ -64,6 +67,17 @@ function weatherIcon(desc: string): string {
   return key ? WMO_ICON[key] : "🌡";
 }
 
+// Maps the crop labels the user picks during onboarding to the ids the
+// Agro-Predict API accepts (see GET /crops). Unknown entries fall through.
+const CROP_ID_OVERRIDES: Record<string, string> = {
+  potatoes: "potato",
+  soya: "soybeans",
+};
+function toAgroPredictCropId(label: string): string {
+  const key = label.trim().toLowerCase();
+  return CROP_ID_OVERRIDES[key] ?? key;
+}
+
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
 
@@ -79,16 +93,25 @@ export default function DashboardScreen() {
   } = useWeather();
 
   const farm = useFarmProfile();
-  const irrigationLat = farm.location?.latitude ?? null;
-  const irrigationLon = farm.location?.longitude ?? null;
-  const primaryCrop = (
-    farm.crops[0] ?? predictions[0]?.crop ?? "corn"
-  ).toLowerCase();
+  const farmLat = farm.location?.latitude ?? null;
+  const farmLon = farm.location?.longitude ?? null;
+  const farmCropIds = React.useMemo(
+    () => farm.crops.map(toAgroPredictCropId).filter(Boolean),
+    [farm.crops],
+  );
+  const primaryCrop = (farmCropIds[0] ??
+    predictions[0]?.crop.toLowerCase() ??
+    "corn") as string;
   const {
     data: irrigation,
     loading: irrigationLoading,
     error: irrigationError,
-  } = useIrrigation(irrigationLat, irrigationLon, primaryCrop);
+  } = useIrrigation(farmLat, farmLon, primaryCrop);
+  const {
+    data: frost,
+    loading: frostLoading,
+    error: frostError,
+  } = useFrostPrediction(farmLat, farmLon, farmCropIds);
 
   const liveFieldStats = weather
     ? [
@@ -470,6 +493,52 @@ export default function DashboardScreen() {
         />
 
         <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Frost Prediction AI</Text>
+          <View
+            style={[
+              styles.aiBadge,
+              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
+            ]}
+          >
+            <Snowflake size={11} color={Colors.green} strokeWidth={2.2} />
+            <Text style={[styles.aiLabel, { color: Colors.green }]}>
+              Agro-Predict
+            </Text>
+          </View>
+        </View>
+
+        {farm.loading || frostLoading ? (
+          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
+            <ActivityIndicator color={Colors.green} />
+            <Text style={styles.frostLoadingText}>
+              Running frost risk model for your field…
+            </Text>
+          </BlurView>
+        ) : !farm.location || farmCropIds.length === 0 ? (
+          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
+            <Text style={styles.frostEmptyText}>
+              Finish onboarding (map pin + at least one crop) to see frost
+              predictions here.
+            </Text>
+          </BlurView>
+        ) : frostError && !frost ? (
+          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
+            <Text style={styles.frostErrorText}>{frostError}</Text>
+          </BlurView>
+        ) : frost ? (
+          <View style={styles.frostList}>
+            {frost.predictions.map((pred, i) => (
+              <FrostPredictionCard
+                key={pred.crop.id}
+                prediction={pred}
+                gptEnabled={frost.gpt_enabled}
+                delay={400 + i * 120}
+              />
+            ))}
+          </View>
+        ) : null}
+
+        <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Field Statistics</Text>
           <CloudSun size={16} color={Colors.textSecondary} strokeWidth={1.8} />
         </View>
@@ -728,6 +797,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   aiLabel: { fontSize: FontSize.xs, fontWeight: "700", letterSpacing: 0.5 },
+  frostList: { gap: Spacing.md },
+  frostLoadingCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: Spacing.lg,
+    overflow: "hidden",
+  },
+  frostLoadingText: {
+    fontSize: FontSize.sm,
+    color: Colors.textSecondary,
+    fontWeight: "500",
+    flex: 1,
+  },
+  frostEmptyText: {
+    fontSize: FontSize.sm,
+    color: Colors.textSecondary,
+    fontWeight: "500",
+  },
+  frostErrorText: {
+    fontSize: FontSize.sm,
+    color: Colors.red,
+    fontWeight: "600",
+  },
   predictionWrap: {
     shadowColor: Colors.green,
     shadowOffset: { width: 0, height: 8 },
