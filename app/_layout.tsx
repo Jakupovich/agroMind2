@@ -8,33 +8,36 @@ import { View, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/theme';
 import { initI18n } from '@/i18n';
 
-function AppGate() {
-  const [checked, setChecked] = useState(false);
+export default function RootLayout() {
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     Promise.all([
       initI18n(),
       AsyncStorage.getItem('onboarding_complete'),
     ]).then(([, val]) => {
-      setChecked(true);
+      setReady(true);
       if (!val) {
         router.replace('/onboarding');
       }
     });
   }, []);
 
-  if (!checked) {
+  if (!ready) {
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: Colors.bg,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <ActivityIndicator color={Colors.green} size="large" />
       </View>
     );
   }
 
-  return null;
-}
-
-export default function RootLayout() {
   return (
     <AlertProvider>
       <SafeAreaProvider>
@@ -43,7 +46,6 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="onboarding" />
         </Stack>
-        <AppGate />
       </SafeAreaProvider>
     </AlertProvider>
   );
