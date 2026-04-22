@@ -10,18 +10,25 @@ import { initI18n } from '@/i18n';
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
   useEffect(() => {
     Promise.all([
       initI18n(),
       AsyncStorage.getItem('onboarding_complete'),
     ]).then(([, val]) => {
+      setNeedsOnboarding(!val);
       setReady(true);
-      if (!val) {
-        router.replace('/onboarding');
-      }
     });
   }, []);
+
+  // Run the redirect only AFTER the Stack has been rendered — otherwise
+  // `router.replace` fires before the navigator is mounted and silently no-ops.
+  useEffect(() => {
+    if (ready && needsOnboarding) {
+      router.replace('/onboarding');
+    }
+  }, [ready, needsOnboarding]);
 
   if (!ready) {
     return (
