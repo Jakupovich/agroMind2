@@ -127,6 +127,15 @@ export default function OnboardingScreen() {
     await AsyncStorage.setItem("onboarding_complete", "true");
     await AsyncStorage.setItem("farm_crops", JSON.stringify(selectedCrops));
     await AsyncStorage.setItem("farm_size", selectedSize ?? "");
+    if (markerPosition) {
+      await AsyncStorage.setItem(
+        "farm_location",
+        JSON.stringify({
+          latitude: markerPosition.latitude,
+          longitude: markerPosition.longitude,
+        }),
+      );
+    }
     router.replace("/(tabs)");
   };
 
