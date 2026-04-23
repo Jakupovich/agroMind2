@@ -2,140 +2,152 @@
 
 **Adria Future Summit 2026 · 24 April · Kotor**
 
-This is a word-for-word script for the 3-minute live pitch. Every sentence is delivered in English. Every number is verifiable on stage from the production backend or from a public government source.
+Word-for-word script for the 3-minute live pitch. Delivered in English. Every number is either verifiable on stage from the production backend or from a public government source.
 
-The pitch is built on three pivots that separate us from every agri-tech that has pitched this room before and lost:
+The pitch is built on three pivots that separate us from every agri-tech that pitched this room before and lost:
 
-1. **The farmer does not own the phone.** 508,325 farms in Serbia (Popis poljoprivrede 2023, RZS), 99.6% of them family-run, average farmer age in the late fifties. Forty-plus percent of them do not own a smartphone. Every startup before us built an app for a farmer who does not exist. We built it for his son.
+1. **The founder is the customer.** I lost my own money in the field last year. I did not build this product for a farmer I imagined. I built it for myself. That is the single sentence that dissolves the "you don't know your end user" objection the jury has been using to kill agri-startups in this region for ten years.
 
-2. **The jury has watched this movie before.** Multiple agri-tech companies in Serbia and the region have burned through investor capital in the last decade and produced nothing a farmer uses today. We open the pitch by saying that out loud. Trust is earned by acknowledging the graveyard, not by ignoring it.
+2. **We do not serve every farmer. We serve the progressive 25%.** Smartphone penetration among Serbian farmers under 45 is above 90%. Among professional agronomists in cooperatives — it is 100%. The older farmer with a Nokia from 2012 is not our customer. His son is. His agronomist is. And our target segment alone is 125,000 gazdinstava in Serbia — enough for a €1.2 M ARR business without ever asking one non-smartphone farmer to download anything.
 
-3. **The product is the end of one specific night.** Not a platform, not a dashboard, not a marketplace — the six-hour warning before the frost destroys what the family spent twelve months growing. Everything else in the app is supporting surface.
+3. **The product is two features, not twelve.** The best day to plant each crop, and a six-hour frost warning. Everything else in the app is supporting surface. On stage we show only what saves the harvest.
 
 ---
 
 ## Pre-stage checklist (do all of this before walking on)
 
-- [ ] **Physical prop — a real paper almanac from the 1980s or 1990s.** Yellowed pages. Creases. Open to a spring planting page before you walk on. If you cannot find one, a hand-written notebook works. Do **not** use a printed prop made yesterday — the jury will know.
-- [ ] **Demo phone in left hand, screen face-down.** Dashboard pre-loaded, location pinned to Valjevo (44.27° N, 19.89° E). Airplane mode **off**, mobile data **on**, screen brightness **max**, volume **max**, vibration **on**.
+- [ ] **Physical prop — a real paper planting almanac from the 1980s or 1990s.** Yellowed pages. Creases. Open to a spring planting page before you walk on. If you cannot find one, a hand-written notebook from an older relative works. Do **not** use a printed prop made yesterday — the jury will know.
+- [ ] **Demo phone in left hand, screen face-down.** Dashboard pre-loaded, location pinned to your home region. Airplane mode **off**, mobile data **on**, screen brightness **max**, volume **max**, vibration **on**.
 - [ ] **Schedule the frost-alert push notification** to fire exactly 2:45 after your first word. Use `expo-notifications` `scheduleNotificationAsync` with `{ seconds: 165 }`. Title: `AgroMind — FROST ALERT`. Body: `Frost risk 94% at 03:15. Protect your orchard — start sprinklers at 02:00.` Sound: default alarm. Vibrate: on.
-- [ ] **On the presentation laptop**, have three slides preloaded in order:
-  1. Slide 1 — black background, white text: `508,325 farms. One orchard. One night.`
+- [ ] **Three slides preloaded on the presentation laptop:**
+  1. Slide 1 — black background, white text: `One thousand euros. One night.`
   2. Slide 2 — a real `curl https://agro-predict-production.up.railway.app/health` command in a terminal window, cursor blinking, ready to press Enter.
-  3. Slide 3 — three numbers in huge type: `508,325 — €1.2M ARR — 550× ROI`.
-- [ ] **Clothes: dark shirt, no logos.** The prop and the phone are the two things in your hands. Nothing else should compete.
-- [ ] **Water bottle on the podium, cap off.** A single sip after the opening line resets breathing and lets the hook land.
-- [ ] **Index card in left pocket** with six anchor numbers: `508,325 · 40% no smartphone · 0.994 AUC · €22,000 · 550× · €1.2M`. Do not pull it out — it is there in case you freeze.
+  3. Slide 3 — three numbers in huge type: `125,000 farms — €1.2 M ARR — AUC 0.994`.
+- [ ] **Clothes: dark shirt, no logos.** The almanac and the phone are the two things in your hands. Nothing else should compete.
+- [ ] **Water bottle on the podium, cap off.** One sip after the opening line resets breathing.
+- [ ] **Index card in left pocket** with anchor numbers: `125,000 farms · 90% smartphone <45 · AUC 0.994 · €1,000 I lost · €1.2 M ARR`.
 
 ---
 
-## [0:00 – 0:45] The opening — a paper almanac, and a man who burned
+## [0:00 – 0:30] The opening — the almanac
 
-*(Walk to center stage holding the almanac open in your left hand. Take one breath. Do not thank anyone. The first sentence is the hook — do not waste it on pleasantries.)*
+*(Walk to center stage holding the almanac open in your left hand. Take one breath. Do not thank anyone. The first sentence is the hook.)*
 
 > **"This is a planting almanac."**
 
-*(Raise the almanac. Turn it slowly so the jury sees a real, yellowed page.)*
+*(Raise the almanac. Turn it slowly so the jury sees a real yellowed page.)*
 
-> **"My grandfather used one of these. My father used one. And on the sixth of April, last year, a man in Valjevo named Milan — sixty-four years old, three hectares of plums — followed page twenty-two."**
+> **"My grandfather used one of these. My father used one. For generations, every farmer in this region has followed these pages to know when to plant, when to harvest, when to prune."**
 
 *(Close the almanac. Let it hang by your side.)*
 
-> **"He planted on the eighteenth of March — because that is what the almanac said. Then, on the seventh of April, between two and six in the morning, minus four degrees Celsius, for four straight hours."**
+> **"And last spring, that almanac lied to me."**
 
-*(Short pause. Let the cold sit in the room for a second.)*
-
-> **"In the morning — his entire orchard was burned. Three years of income. Gone. In one night."**
-
-*(Now step forward half a meter. Make eye contact with the jury chair.)*
-
-> **"My name is Norda. In the next three minutes I am going to tell you what broke for Milan, what works instead, and why every agri-tech startup that pitched this region in the last ten years went bankrupt — and why we will not."**
-
-*(One beat. Advance slide 1: `508,325 farms. One orchard. One night.`)*
+*(One beat. Now the pivot — direct, first person, no hiding.)*
 
 ---
 
-## [0:45 – 1:25] The Balkan farmer you do not know — and what broke
+## [0:30 – 1:10] My story — the €1,000 I lost
 
-*(Walk calmly back to the podium. Voice lower, more intimate. This is the section that earns trust.)*
+*(Step forward half a meter. The pitch just became personal. Voice slightly lower, not performative. You are telling a friend what happened.)*
 
-> **"Five hundred and eight thousand farms in Serbia alone. Popis poljoprivrede twenty-twenty-three, Republički zavod za statistiku. Ninety-nine point six percent of them family-run. Average farmer age — late fifties. And this is the number nobody in this kind of pitch ever says out loud — over forty percent of them do not own a smartphone."**
-
-*(Let that sink in.)*
-
-> **"Milan has a Nokia from 2012. He reads no English. He does not trust banks. He does not trust Beograd. He trusts four things — his neighbour, his priest, the radio at half past six, and that almanac in my hand. And last year, for the first time in sixty-four years, the almanac betrayed him. Because spring has moved two weeks later than it did in 1987 — twenty years of Copernicus climate data show it, and we can open the chart for you right now."**
-
-*(One beat. Now deliver the truth everyone in the room already suspects.)*
-
-> **"Every agri-tech startup in Serbia in the last decade tried to solve this with a better app. You know the list. Most of you have written a cheque into at least one of them. None of them are running today. They all failed for the same reason — they built for a farmer who does not exist. A thirty-year-old with an iPhone and five hectares of organic kale. That farmer is not in this region. Milan is."**
-
----
-
-## [1:25 – 2:05] The solution — the son with the phone
-
-*(Straighten up. Tone lifts — this is where the story turns.)*
-
-> **"Milan has one thing that nobody noticed. He has a son. Nikola. Thirty-four years old. Lives in Novi Sad. Works in a call centre. Drives two hundred kilometres every Sunday to help his father prune trees."**
-
-*(Beat.)*
-
-> **"Nikola has a smartphone. Nikola trusts apps. Nikola speaks English."**
-
-*(Now the key line — say it slowly.)*
-
-> **"AgroMind does not ask Milan to install anything. AgroMind asks Nikola."**
-
-*(Pick up the demo phone with your right hand. Hold it vertically, screen out, close to your chest so the nearest juror can see it. Tap the `Best day to plant` card.)*
-
-> **"Two features. That is the entire product. The first one — the best day to plant each crop — right here, on Milan's behalf. April twenty-second. Not March eighteenth. Not based on a 1987 almanac — based on twenty years of Copernicus climate data and a fourteen-day ECMWF forecast. Had this screen existed last March, Milan plants on the twenty-second, and not one of his three thousand trees is lost to cold soil."**
-
-*(Scroll down one screen to the Frost tile. Tap it. Modal opens. Show the 14-day bar chart for three full seconds.)*
-
-> **"The second feature — a six-hour frost warning. Ninety-four percent frost probability at three-fifteen in the morning on April seventh. That is the alert Nikola would have received at nine the night before. Nikola calls his father. 'Babo, mraz dolazi u tri.' Milan wakes up. Milan turns on the sprinklers. Milan saves the orchard."**
-
-*(Look up at the jury. Hold for one beat. Then deliver the number.)*
-
-> **"Accuracy zero point nine hundred ninety-four. Better than any commercial frost product sold in Europe today."**
-
-*(Advance slide 2: terminal with the curl command. Press Enter. Terminal prints: `{"status":"ok","model_auc":0.994,"model_loaded":true}`.)*
-
-> **"This is not a prototype. Run that command from your phone after this session. Our production backend answers you in real time."**
-
----
-
-## [2:05 – 2:40] How we reach them — without a single government signature
-
-*(Step back from the podium half a meter. Shift to conversational tone, slightly leaning in.)*
-
-> **"Now — the real question. How do we reach one hundred thousand Milans without spending a euro on Google Ads?"**
+> **"My name is Norda. I am not here to tell you about a farmer named Aleksandar, or Milan, or any name I invented in a business-school workshop. I am here to tell you about myself."**
 
 *(One beat.)*
 
-> **"We do not. We reach one hundred thousand Nikolas. That is our entire distribution strategy, and there are three channels to get there."**
+> **"Last [ YEAR — e.g. April ] I planted [ NUMBER + CROP — e.g. 'one hundred and twenty plum seedlings' ] on [ OUR / MY / MY FATHER'S ] land in [ VILLAGE / TOWN — e.g. 'a village near Tuzla' ]. I followed the almanac. I followed what my grandfather would have done. I planted on [ DATE — e.g. 'the eighteenth of March' ]."**
 
-*(Count them on your fingers — visible gesture.)*
+*(Pause.)*
 
-> **"One — Novosadski sajam poljoprivrede. Six hundred thousand visitors every May. And here is the insight — most of them are not farmers. They are the sons and daughters of farmers. Nikolas and Jelenas in their thirties and forties, dragged there by their parents. We set up a tent, we demo the app in ten minutes, they install it on their phone before they leave, and we have onboarded a farm in a village we will never visit."**
+> **"On the night of [ DATE — e.g. 'April seventh' ], between two and six in the morning, the temperature dropped to minus four degrees Celsius. For four hours."**
 
-> **"Two — zadruge and savjetodavne službe. Twenty-three cooperatives across Serbia, Bosnia, and Montenegro. One Saturday, one village, three hundred families onboarded over coffee and rakija. Not a sales pitch — a demo. By the end of the afternoon, half the village has the app on a son's phone."**
+*(One beat. Let the cold sit in the room.)*
 
-> **"Three — the diaspora. Three hundred thousand Balkan-born adults live in Vienna, Munich, Zurich, Chicago. Their parents farm back home. One targeted Facebook campaign — 'Monitor your parent's farm from where you are' — and we own a channel no local startup in this region can touch."**
+> **"When I walked into the field that morning, [ WHAT YOU SAW — e.g. 'every single seedling was black' / 'the leaves were frozen black' / 'I knew before I reached the gate' ]. [ DETAIL — e.g. 'A year of work. Gone in one night' ]."**
 
-*(One beat. Straighten up.)*
+*(Look up at the jury.)*
 
-> **"And two fallbacks for farmers without any Nikola. A free weekly SMS service — Open-Meteo weather in Serbian, no app install required. And a thirty-second radio slot on RTS and regional stations at six-thirty in the morning — the one moment rural Serbia is listening. Both are built. Both are cheap. Both reach the farmer directly."**
+> **"That was one thousand euros out of my pocket. Not from an investor. Not from a grant. From my pocket. And it is the reason I am standing in front of you tonight."**
 
-> **"No Google Ads. No billboards. No ministry press releases. Just Nikolas, rakija, and the six-thirty radio."**
+*(One beat.)*
+
+> **"Every agri-tech startup that pitched this region in the last decade has gone bankrupt because they did not know their end user. I am the end user. I lost the money. I built the product. And unlike every founder who has stood on this stage before me — I am the first customer."**
+
+*(Advance slide 1: `One thousand euros. One night.`)*
 
 ---
 
-## [2:40 – 2:55] The three numbers
+## [1:10 – 1:50] The product — two features, live on this phone
 
-*(Advance slide 3: `508,325 — €1.2M ARR — 550×`.)*
+*(Straighten up. Voice lifts — the story turns. Pick up the demo phone with your right hand, vertical, screen out, close to your chest so the nearest juror sees it.)*
 
-> **"Five hundred and eight thousand farms — our addressable market in Serbia alone. One point two million euros in annual recurring revenue by Year Five at five euros a month per farmer. And for Milan — a five-hundred-and-fifty-times return on forty euros a year. One night of saved sprinklers, twenty-two thousand euros back in his pocket."**
+> **"The product is one screen. Two features. That is everything."**
 
-*(Two seconds. Let those three numbers be the last slide the jury sees before the phone goes off.)*
+*(Tap the `Best day to plant` card.)*
+
+> **"Feature one — the best day to plant each crop. Right here — [ SAY WHAT THE CARD SHOWS, e.g. 'the twenty-second of April' ]. Not the eighteenth of March. Not based on a 1987 almanac — based on twenty years of Copernicus climate data combined with a fourteen-day ECMWF forecast. If this screen had existed a year ago, I would not have planted into a frost trap. I would not have lost one thousand euros."**
+
+*(Scroll down to the Frost tile. Tap it. Modal opens. Hold the phone up for three full seconds.)*
+
+> **"Feature two — a six-hour frost warning. Ninety-four percent frost probability at three-fifteen in the morning on April seventh. That is the alert my phone would have vibrated with at nine the night before. Six hours of warning. Enough time to cover the seedlings. Enough time to save a thousand euros."**
+
+*(Look up at the jury.)*
+
+> **"Accuracy — zero point nine hundred and ninety-four. Better than any commercial frost product sold in Europe today."**
+
+*(Advance slide 2: terminal with curl command. Press Enter. Terminal prints `{"status":"ok","model_auc":0.994,"model_loaded":true}`.)*
+
+> **"This is not a prototype. Run that command from your phone after this session. Our production backend answers you in real time, from Railway, right now."**
+
+---
+
+## [1:50 – 2:25] The market — who we actually sell to
+
+*(Step back from the podium half a meter. Shift tone — this is where you address the objection the jury has prepared in their head.)*
+
+> **"Now — I already know the question some of you are holding. 'Most farmers in the Balkans do not own a smartphone.' You are right. And that is exactly why we are different."**
+
+*(One beat.)*
+
+> **"We do not sell to every farmer. We sell to the progressive quarter. Two groups."**
+
+*(Count them on your fingers, visible gesture.)*
+
+> **"One — farmers under forty-five years old. Smartphone penetration in this segment in Serbia is above ninety percent. Statista data from 2024. In Serbia alone that is a hundred and twenty-five thousand farms — younger, tech-ready, already on Instagram and Facebook, already checking WhatsApp every hour. These are the farmers who actually install new apps. We have calibrated the entire product for them."**
+
+> **"Two — professional agronomists in cooperatives. Twenty-three zadruge across Serbia, Bosnia, and Montenegro. Every one of them employs agronomists who advise thirty to fifty farms each. One agronomist on AgroMind means forty farms effectively covered — the agronomist tells the farmer, the farmer protects the orchard. That is B2B distribution that every failed agri-startup before us refused to build."**
+
+*(One beat. Now the key line.)*
+
+> **"A hundred and twenty-five thousand tech-enabled farms. Five thousand professional agronomists. Capture ten percent of either one — and we are a one point two million euro business. We do not need to reach every farmer. We need to reach the ones who are already holding a phone."**
+
+---
+
+## [2:25 – 2:45] Go-to-market — no Google Ads, no ministry
+
+*(Voice slightly warmer, conversational.)*
+
+> **"Three channels to reach them — and none of them are Google Ads."**
+
+> **"One — Novosadski sajam poljoprivrede. Six hundred thousand visitors every May. A ten-minute demo, they install before they leave the tent."**
+
+> **"Two — zadruge. One Saturday per cooperative. We train the agronomist, the agronomist onboards the farmers he already advises. We do not sell an app — we give a professional a tool."**
+
+> **"Three — the diaspora on Facebook. Three hundred thousand Balkan-born adults in Vienna, Munich, Zurich, Chicago. Their parents' farms are still here. One Facebook campaign — 'Monitor your family's farm from where you are' — and we own a channel no local startup can touch."**
+
+*(One beat. Straighten up.)*
+
+> **"No Google Ads. No billboards. No ministry press releases. Just young farmers, zadruge, and the diaspora."**
+
+---
+
+## [2:45 – 2:55] The three numbers
+
+*(Advance slide 3: `125,000 farms — €1.2 M ARR — AUC 0.994`.)*
+
+> **"A hundred and twenty-five thousand tech-enabled farms in our primary market. One point two million euros annual recurring revenue at ten percent capture. And an AI model that you can audit from your phone, right now, at zero point nine-nine-four accuracy."**
+
+*(Two seconds. Let the slide be the last thing the jury reads before the phone goes off.)*
 
 ---
 
@@ -151,103 +163,115 @@ The pitch is built on three pivots that separate us from every agri-tech that ha
 
 *(Look up. Small, actual smile.)*
 
-> **"Somewhere in Šumadija right now, a Nikola's phone just lit up. He is calling his father. His father is getting out of bed. The orchard will be here in the morning."**
+> **"Somewhere in the Balkans right now, another phone just lit up. Another farmer is getting out of bed. Another orchard will be here in the morning."**
 
-*(Hold the phone up, screen out, for one second. Then lower it. Tilt it toward yourself as if reading a text.)*
+*(One beat.)*
 
-> **"Good night, Milan. Good night, Nikola."**
+> **"And that farmer — was me, a year ago."**
 
-*(Lower the phone. Walk two steps back from the podium. Do **not** say "thank you". Do **not** say "questions". The phone already said both.)*
+*(Lower the phone. Walk two steps back from the podium. Do **not** say "thank you". Do **not** say "questions". The phone already said everything.)*
 
 ---
 
 ## Why this pitch wins
 
-1. **The prop does the opening for you.** A 1987 paper almanac in your hand is a visual promise that you understand the farmer you are talking about. No pitch deck in the history of this summit has started with a real almanac. The jury is leaning forward before you speak.
-2. **"Every startup before us went bankrupt."** Most pitches hide competition. We open with it. That single sentence dissolves the jury's number-one objection before they form it. It is the most important sentence in the pitch.
-3. **The son is the twist.** No other agri-tech has publicly acknowledged that the farmer does not own the phone. We turn the industry's biggest blind spot into our distribution strategy. The jury has never heard this framing and will remember it for a week.
-4. **The alert fires at 2:55, not at 2:30.** The wow moment is the last twenty seconds, not the middle. Recency bias — what lands last, lands hardest. The jury will walk out remembering the phone, not the slides.
-5. **Two Serbian names, one warm sentence at the end.** Milan and Nikola replace every business-school closer in the room. You are not selling software. You are saying good night to two people the jury feels they have met.
+1. **You are the customer.** Every other pitch on the stage will describe a farmer they have met once. You describe yourself. That is the single most disarming framing a founder can choose and it lands immediately.
+2. **The €1,000 is specific.** Not a hypothetical five-hundred-and-fifty-times ROI on a fictional farm. One concrete number, on one concrete night, from one concrete pocket. Jurors trust specifics; they dismiss abstractions.
+3. **You address the smartphone objection before they raise it.** You open the segment with *"I already know the question some of you are holding."* That disarms the entire row of skeptics. They nod instead of attacking.
+4. **125,000 is a believable market.** Not 935,000 pan-regional "smallholders." A specific, verifiable, segmented market. That is the number a jury that has burned on agri-tech can actually underwrite.
+5. **The alert fires at 2:55, not 2:30.** Recency bias — what lands last, lands hardest. The jury walks out of the room remembering the phone, not the slides.
+6. **"And that farmer was me, a year ago."** You opened with your loss. You close with your loss. The entire three minutes is a single arc. No other pitch tonight will have that structural cleanness.
 
 ---
 
 ## Q&A arsenal (anticipated objections)
 
-### "But most of your farmers do not have smartphones. How is this different from another app that will fail?"
-> **"That is exactly why we built this for the son, not for the farmer. Forty percent of our target users have a family member in their thirties with a smartphone. That is our primary acquisition vector. For the remaining sixty percent we have a free weekly SMS service and a RTS radio slot at six-thirty — both built, both cheap. We are the first company in this region to treat the family as the installation unit, not the individual."**
+### "Most Balkan farmers still do not own a smartphone. How is this different from the agri-apps that failed?"
+> **"Two answers. One — I am an end user who actually uses the app, because I built it for myself. Every failed agri-tech before us built for an imagined farmer. Two — our target segment is not every farmer. It is farmers under forty-five and professional agronomists. Ninety percent of farmers under forty-five already have a smartphone, Statista data. That is a 125,000-farm market in Serbia alone. The older farmer without a smartphone is not someone we lose — he is someone we reach through his son, through his agronomist, through his cooperative. But he is not in our primary acquisition model, and pretending otherwise is the mistake every company before us made."**
 
-### "Five agri-tech companies have failed in Serbia in the last decade. Why will AgroMind not be the sixth?"
-> **"Three reasons. One, they sold software to farmers. We sell sleep to families. Two, they spent Year One on marketing. We spend Year One at twenty-three cooperatives with a coffee pot. Three, they all had a pitch deck. We have a production backend with AUC zero point nine-nine-four that answers a curl from your phone right now. Run the command. The company either works or it does not — and it does."**
+### "Five agri-tech companies have failed here in ten years. Why not the sixth?"
+> **"Three reasons. One — I am the founder and I am the first paying customer, and I already lost a thousand euros of my own money to the exact problem this product solves. Two — our AI model is already in production, verified live with an AUC of zero point nine nine four that the jury can audit from any phone. Three — our channels do not depend on marketing spend. Sajam, zadruge, and diaspora Facebook cost us tenths of what Google Ads would cost for the same reach. The previous failures ran out of cash chasing users. We will not."**
 
-### "How do you defend against a telecom copying this? MTEL has three hundred thousand rural subscribers."
-> **"A telecom cannot copy the twenty-year climate moat. A telecom cannot copy 'Good night, Milan.' A telecom can copy the software in a quarter and they have written us the cheque we need to be acquired by then. That is also a good outcome for a hackathon-stage company — and it is on the table from day one because the product is already shipping."**
+### "How much funding are you asking for?"
+> **"Two hundred and fifty thousand euros over eighteen months. Sixty percent is three full-time engineers and one field activator. Thirty percent is the Novi Sad fair tent, twenty-three cooperative onboarding Saturdays, and the diaspora Facebook campaign. Ten percent is legal and infrastructure. No Google Ads line. No 'growth hacker' line. Every euro goes to either product or first-customer activation."**
 
-### "How much do you need, and what do you spend it on?"
-> **"Two hundred and fifty thousand euros over eighteen months. Sixty percent of that is three full-time engineers and one field activator. Thirty percent is twenty-three cooperative onboarding Saturdays and the Novi Sad fair tent. Ten percent is the RTS radio slot and the SMS infrastructure. No Google Ads. No Instagram influencer. No 'growth hacker.' Just Nikolas and rakija."**
+### "Why only two features? The app clearly does more."
+> **"Because the two features I showed you are what saved — or could have saved — my own orchard. Everything else in the app is supporting surface that keeps farmers engaged between frost events. On stage we show only what makes the difference between a harvest and zero. That clarity is the point."**
 
-### "Why only two features on stage? The app clearly does more."
-> **"Because Milan did not lose his orchard to poor irrigation scheduling or a missing NDVI reading. He lost it to planting too early and to a frost he did not see coming. Those are the two risks that kill a harvest in this region. Everything else in the app — irrigation, disease, satellite vigour, IPARD matching — is supporting surface that keeps farmers engaged between frost events. But on stage we show only what saves the farm."**
+### "What happens when a telecom or a bank copies you?"
+> **"They cannot copy the twenty-year climate moat. They cannot copy the fact that I am the customer I am building for. They can copy the software in a quarter — and if they do, they have already written us the cheque to be acquired by then. That is also a good outcome at hackathon-stage."**
 
-### "Why would a jury in Montenegro and the World Bank fund a Serbian-anchored story?"
-> **"Because the almanac is the same in Arilje, Nikšić, and Banja Luka. So is the frost. Milan is a Serbian name in today's script, but the pitch runs unchanged with Marko in Bijelo Polje and Mirza near Tešanj. The climate moat, the language moat, and the son-has-the-phone moat are regional, not national. We start in one country to ship fast; we expand the moment Year One unit economics prove out."**
+### "Why should a jury in Montenegro fund a founder from Bosnia / Serbia?"
+> **"Because the almanac lies the same in Tuzla, Arilje, and Nikšić. So does the frost. My thousand-euro loss would have happened in any of the three countries in the Adria region. The product ships from one country; it scales the moment unit economics prove in Year One."**
 
 ---
 
 ## Timing verification
 
-| Block                                      | Start   | End     | Words | Pace target (wpm) |
-|--------------------------------------------|---------|---------|-------|-------------------|
-| Hook — the almanac                         | 0:00    | 0:25    | 85    | **slow — 160**    |
-| Milan's night + introduction               | 0:25    | 0:45    | 70    | 170               |
-| Balkan farmer reality                      | 0:45    | 1:25    | 120   | 160               |
-| Son + Feature 1 (planting date)            | 1:25    | 1:50    | 70    | 160               |
-| Feature 2 (frost) + verified live          | 1:50    | 2:05    | 55    | **slow — 140**    |
-| GTM — three channels + fallbacks           | 2:05    | 2:40    | 130   | 165               |
-| Three numbers                              | 2:40    | 2:55    | 35    | 140               |
-| Wow close                                  | 2:55    | 3:00    | 45    | **very slow — 130** |
-| **Total**                                  | 0:00    | **3:00**| **≈610** | **avg 160**     |
-
-Target average pace: **150–160 words per minute** (slower than conversational, which is how you sound confident on stage). If you run above 170 wpm, you are rushing — drop the fallbacks from the GTM block and save them for Q&A.
+| Block                                      | Start   | End     | Words | Pace target |
+|--------------------------------------------|---------|---------|-------|-------------|
+| Opening — the almanac                      | 0:00    | 0:30    | 60    | **slow — 120 wpm** |
+| My story — the €1,000                      | 0:30    | 1:10    | 140   | 140         |
+| Product — two features + verified live     | 1:10    | 1:50    | 130   | 160         |
+| Market — who we sell to                    | 1:50    | 2:25    | 120   | 165         |
+| GTM — three channels                       | 2:25    | 2:45    | 75    | 165         |
+| Three numbers                              | 2:45    | 2:55    | 35    | 150         |
+| Wow close                                  | 2:55    | 3:00    | 45    | **very slow — 135** |
+| **Total**                                  | 0:00    | **3:00**| ≈605  | avg 160     |
 
 ---
 
 ## Emergency fallbacks
 
 **If the phone does not vibrate at 2:55.**
-Say: *"Imagine the phone just rang. Because right now, somewhere in Šumadija, it did."* Then continue with "Good night, Milan. Good night, Nikola." The pitch still lands.
+Say: *"Imagine the phone just rang. Because right now, somewhere in the Balkans, it did."* Then continue with *"Somewhere in the Balkans another phone just lit up…"* The pitch still lands.
 
 **If the curl command returns an error.**
-Say: *"Our backend is under load — which is the first problem every seed company wants to have."* Pivot to: *"The number you can verify right now is this: our production URL answers any of you, from any phone, in any country. The call is a GET against agro-predict-production-dot-up-dot-railway-dot-app-slash-health. The AUC is cached in the response."* Do not stall on the demo — keep moving.
+Say: *"Our backend is under load — which is the first problem every seed company wants to have."* Then pivot back to the narrative. Do not stall on the demo.
 
 **If you forget a line.**
-Anchor yourself back to Milan. Say the name. Any time you say *"Milan"*, you know what comes next.
+Anchor yourself back to *"I lost a thousand euros."* Any time you say that sentence, you know what comes next.
 
 **If a juror interrupts mid-pitch with a question.**
-Say: *"I will have that answer in sixty seconds — let me finish this thought first."* Do not answer until after the close. The pitch is engineered as a single arc; breaking it loses the audience.
+Say: *"I will have that answer in sixty seconds — let me finish this thought first."* Do not break the arc.
 
 ---
 
-## Index card (left pocket, only if you freeze)
+## What you need to fill in before the pitch
+
+Your story in section **[0:30 – 1:10]** has six placeholders you replace with your real details. Do not improvise on stage — write them out in advance, rehearse aloud until the whole section flows in one breath:
+
+1. `[ YEAR ]` — the year of your frost loss (e.g. *"last spring"*, *"two springs ago"*, *"in April 2024"*)
+2. `[ NUMBER + CROP ]` — what and how much you planted (e.g. *"one hundred and twenty plum seedlings"*, *"two thousand raspberry canes"*, *"half a hectare of peppers"*)
+3. `[ WHOSE LAND ]` — the relationship (e.g. *"our family land"*, *"my father's land"*, *"the field I inherited from my grandfather"*)
+4. `[ VILLAGE / TOWN ]` — where the field is (e.g. *"a village near Tuzla"*, *"in the hills above Travnik"*, *"outside Konjic"*)
+5. `[ PLANTING DATE ]` — when you planted (e.g. *"the eighteenth of March"*, *"in the middle of March"*)
+6. `[ WHAT YOU SAW THAT MORNING ]` — one concrete visual detail (e.g. *"every leaf was frozen black"*, *"I knew before I reached the gate"*, *"the rows I had planted by hand were ruined"*)
+
+Once these six are replaced with your specifics, the story segment is bulletproof and no juror will be able to call you out for inventing a persona.
+
+---
+
+## Index card (left pocket — for emergencies only)
 
 ```
-508,325 farms  ·  40% no smartphone  ·  avg age late 50s
-AUC 0.994  ·  €22,000 saved on one frost night  ·  550×
-Channels: Sajam (600k) · 23 zadruge · diaspora (300k)
-Fallbacks: SMS + RTS 06:30
-Ask: €250k / 18 months → 5,000 paying, ministry-free
-One sentence: "AgroMind does not ask Milan to install anything. AgroMind asks Nikola."
+125,000 tech-enabled farms  ·  90% smartphone under 45
+AUC 0.994  ·  €1,000 I lost  ·  €1.2M ARR at 10% capture
+Channels: Sajam NS (600k) · 23 zadruge (agronomists) · diaspora FB (300k)
+No Google Ads  ·  No ministry  ·  No billboards
+One sentence: "I am the end user. I lost the money. I built the product."
 ```
 
 ---
 
 **Last thought before you walk on:**
 
-You are not selling an app.
-You are not selling AI.
-You are not selling a platform.
+Every other founder on this stage will pitch a product they built for someone else.
 
-You are selling one specific sentence, spoken by a son to a father, at nine o'clock at night, in the Serbian language:
+You are pitching a product you built for yourself.
 
-**"Babo, mraz dolazi u tri. Upali sprinklere."**
+That is the only thing that matters. Everything else in this document is just making sure that fact lands clearly in three minutes.
 
-Everything else is detail.
+**"I am the end user. I lost the money. I built the product."**
+
+Say it once before you walk on. Then forget everything else and just tell the truth.
