@@ -108,6 +108,47 @@
     "risk_moderate": "Moderate",
     "risk_high": "High"
   },
+  "season": {
+    "spring": "Spring",
+    "summer": "Summer",
+    "autumn": "Autumn",
+    "winter": "Winter"
+  },
+  "climate": {
+    "label_excellent": "Excellent",
+    "label_moderate": "Moderate",
+    "label_high_risk": "High Risk"
+  },
+  "ai_models": {
+    "title": "AI Models · Precision",
+    "subtitle": "Every prediction on this dashboard is backed by published science",
+    "live": "LIVE",
+    "verified": "VERIFIED",
+    "footnote": "Frost AUC is fetched live from Agro-Predict /health. Other figures are published references — sources linked in the pitch deck.",
+    "frost_title": "Frost Prediction",
+    "frost_method": "Gradient Boosting on 20-year ECMWF archive",
+    "frost_source": "Agro-Predict /health · live AUC",
+    "disease_title": "Disease & Pest Risk",
+    "disease_method": "Smith Period (Phytophthora) + TOMCAST DSV (Early Blight)",
+    "disease_source": "ADAS / DLG 1999 · Pscheidt & Stevenson 1988",
+    "irrigation_title": "Smart Irrigation",
+    "irrigation_method": "FAO-56 Penman-Monteith ET0 water balance",
+    "irrigation_source": "Allen et al. 1998 · FAO Irrigation Paper 56",
+    "ndvi_title": "Satellite NDVI",
+    "ndvi_method": "Sentinel-2 L2A · 10 m GSD · CDSE",
+    "ndvi_source": "ESA Copernicus Product Specification 2021",
+    "weather_title": "Weather Forecast",
+    "weather_method": "Open-Meteo ECMWF IFS · 24h T_mean MAE",
+    "weather_source": "Open-Meteo validation report 2024"
+  },
+  "alerts": {
+    "frost_risk_days": "Frost risk on {{count}} day(s) in next 14",
+    "irrigation_urgent": "URGENT irrigation · {{mm}} mm deficit",
+    "irrigation_moderate": "Irrigation recommended · {{mm}} mm",
+    "disease_high": "High disease risk: {{name}}",
+    "hail_active": "Hail storm active — protect orchards now",
+    "storm_detected": "Thunderstorm in your area"
+  },
   "roi": {
     "title": "Season Savings",
     "subtitle": "What AgroMind has protected for you",
