@@ -100,7 +100,23 @@
     "window": "Prozor",
     "light_green": "Sigurno za sjetvu",
     "light_yellow": "Pratite pažljivo",
-    "light_red": "Odgodite sjetvu"
+    "light_red": "Odgodite sjetvu",
+    "tap_for_details": "Dodirni za detalje sjetve"
+  },
+  "frost_detail": {
+    "kicker": "Sjetveni prozor · AI obrazloženje",
+    "recommended_date": "Preporučeni datum sjetve",
+    "window_span": "Važeći sjetveni prozor {{start}} → {{end}}",
+    "why_title": "Zašto baš ovaj datum?",
+    "why_body": "AgroMind kombinuje 20-godišnju klimatologiju mraza sa živom 14-dnevnom ECMWF prognozom. Biramo najraniji dan kad tolerancija tvoje kulture na mraz ostaje sigurna tokom cijelog perioda klijanja.",
+    "stat_avg_frost": "Prosječna vjerovatnoća mraza (14 d)",
+    "stat_max_frost": "Vrhunska vjerovatnoća mraza",
+    "stat_historical": "Historijska stopa mraza (20 g)",
+    "stat_auc": "Model AUC / pouzdanost",
+    "forecast_title": "14-dnevna prognoza",
+    "forecast_subtitle": "Dnevni min/max temperatura, padavine i vjerovatnoća mraza po danu iz Open-Meteo ECMWF IFS-a.",
+    "reasoning_title": "Detaljno obrazloženje",
+    "no_data": "Za ovu kulturu još nije dostupna prognoza."
   },
   "disease": {
     "prevention": "Prevencija",
@@ -193,6 +209,32 @@
       "measure_vegetable": "Povrće i plastenici (M1)",
       "description_vegetable": "Plastenici i kap-po-kap sistemi. Pokrivenost 60–75%; dostupan organski bonus."
     }
+  },
+  "field_advisor": {
+    "section_title": "Unaprijedi svoje polje",
+    "title": "Savjetnik za polje",
+    "subtitle": "Konkretni savjeti na osnovu tvojih AI očitanja — provjerene i jeftine mjere.",
+    "tip_variability_title": "Istraži neujednačenost polja",
+    "tip_variability_body": "Standardna devijacija NDVI vrijednosti je {{stdev}} — polje je vidljivo neujednačeno. Prošetaj najslabiju zonu i provjeri zbijenost tla, drenažu ili nejednak nicanje.",
+    "tip_variability_impact": "Može dignuti prosječan prinos 5–10%",
+    "tip_canopy_title": "Ojačaj rast lisne mase",
+    "tip_canopy_body": "Prosječan NDVI {{mean}} je ispod optimalnog praga. Razdijeljena doza azota u sljedećoj fazi rasta obično vraća kanopi u 2–3 sedmice.",
+    "tip_canopy_impact": "Cilj: NDVI +0.10 za 21 dan",
+    "tip_mulch_title": "Zadrži vlagu malčom",
+    "tip_mulch_body": "Detektovan umjeren ili hitan deficit vode. Sloj od 3–5 cm organskog malča (slama, piljevina, zelena masa) smanjuje isparavanje do 70%.",
+    "tip_mulch_impact": "Ušteda ~30% vode za navodnjavanje",
+    "tip_rotation_title": "Prekini ciklus bolesti",
+    "tip_rotation_body": "Pritisak bolesti je iznad baznog nivoa. Sljedeću sezonu rotiraj ovu parcelu sa ne-domaćinom (mahunarke poslije žita; žita poslije krompira/paradajza) da gladuješ patogene u tlu.",
+    "tip_rotation_impact": "Do 50% manje patogena",
+    "tip_cover_title": "Posij pokrovni usjev poslije žetve",
+    "tip_cover_body": "Zimska raž ili grahorica drže tlo, vežu azot i grade organsku materiju — najbolja dugoročna intervencija za tla Adria regiona.",
+    "tip_cover_impact": "+0.2% organske materije po sezoni",
+    "tip_organic_title": "Nahrani tlo, ne samo usjev",
+    "tip_organic_body": "Primijeni 2–3 t/ha kompostiranog stajnjaka ili zelenišnog đubriva svake jeseni. Organska materija je temelj otpornosti na sušu.",
+    "tip_organic_impact": "+15% kapaciteta zadržavanja vode",
+    "tip_shade_title": "Zaštiti mlade biljke od UV-a",
+    "tip_shade_body": "UV indeks je 7+. Osjetljivim presadnicama (paradajz, paprika, salata) pomaže 30% sjenka tokom podneva prvih 10 dana nakon rasađivanja.",
+    "tip_shade_impact": "Smanjuje šok rasađivanja"
   },
   "ndvi": {
     "title": "Satelitski NDVI",
