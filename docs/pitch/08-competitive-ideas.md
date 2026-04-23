@@ -83,7 +83,7 @@ Accessibility signal + tech moat.
 
 ### 7. "Farm Risk Radar" — single-screen 12-month heatmap
 **What**: One slide in the app: rows = months, columns = risk categories
-(frost, drought, disease, hail), cells = red/amber/green. One look, one
+(frost, drought, disease), cells = red/amber/green. One look, one
 decision. Generated from 20-year historical + current forecast.
 
 **Why wins jury**: Visual clarity. Judges remember **one image** per team;
@@ -131,7 +131,7 @@ early yield outcomes. Creates network effect (every new farm makes the
 map more valuable).
 
 ### 12. **Insurance integration** (Sava, Dunav, Grawe ME)
-Auto-populate insurance claim form when app detects a frost / hail event.
+Auto-populate insurance claim form when app detects a frost event or crop loss.
 Insurance companies pay commission per successful claim — B2B2C revenue.
 
 ### 13. **Gamification & leaderboards**

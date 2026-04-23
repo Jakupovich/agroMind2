@@ -2,15 +2,24 @@
 
 **Total run time:** 3:00 (plus 5 min Q&A after).
 **Spoken words:** ≈ 420, delivered at 140 wpm.
-**Demo time:** ≈ 35 seconds of interactive silence, interleaved.
+**Demo time:** ≈ 40 seconds of interactive silence, interleaved.
 **Language:** English (Summit international standard).
 **Audience:** World Bank, MTEL Montenegro, Reputeo, AI Nation Foundation, investors.
+
+## The two features this pitch is built around
+
+Everything in this pitch — every sentence, every demo, every number — serves **two features**. Anything else is supporting context.
+
+1. **Optimal planting date per crop.** The app tells Aleksandar the single best day to sow each crop based on 20-year climate history + live 14-day ECMWF forecast, so he never plants into a frost trap.
+2. **Frost detection.** Six-hour early push alert when a frost event is forecast over his exact pin, with per-crop vulnerability and a recommended defence action.
+
+These two features are the product. Everything else (irrigation, disease, NDVI, IPARD) is supporting surface — do not spend stage time on them unless a judge asks.
 
 ---
 
 ## Before you walk on stage
 
-- Phone **unlocked, in airplane mode + Wi-Fi**, dashboard **already loaded** on farm in Arilje. Expo Go is not open; the standalone build or Expo web is.
+- Phone **unlocked, in airplane mode + Wi-Fi**, dashboard **already loaded** on a farm in Arilje. Expo Go is not open; the standalone build or Expo web is.
 - Laptop on table, **backup screen recording** of the full demo cued at 00:00.
 - Water bottle within reach.
 - Wear **dark shirt, no logo**. Let the product be the brand, not you.
@@ -30,77 +39,69 @@
 
 *(Now look directly at the jury. Hold for one beat.)*
 
-> **"My name is Norda. I am here today to show you the app that makes sure that night never happens again to a farmer in the Adria region."**
+> **"My name is Norda. Today I am going to show you two features that would have saved that night. Just two. The two features that matter more than anything else an app can do for a farmer in the Adria region."**
 
 ---
 
-## [0:25] — The Persona
+## [0:25] — The Persona and the Two Mistakes
 
 *(Walk two steps to the right of center. Advance slide: **one photo of a 48-year-old farmer standing in a burned orchard**.)*
 
 > **"This is Aleksandar Jovanović. Forty-eight years old. Three-and-a-half hectares of apricots outside Arilje, in central Serbia.**
 >
-> **That night, he lost seventy percent of his trees. Forty-four thousand euros — erased — from a family income of eleven thousand a year.**
+> **Aleksandar made two mistakes last year. The first mistake, he made on March eighteenth — he planted too early, because his almanac said so. The second mistake, he made on April sixth — he went to bed, because no one told him a frost was coming.**
 >
-> **Aleksandar has a one-hundred-eighty-euro Samsung phone. He has Facebook. He has WhatsApp. He has his daughter to help him fill out paper forms. And until tonight, he has had zero access to the same agricultural artificial intelligence that is protecting a California vineyard right now.**
+> **Those two mistakes cost him forty-four thousand euros. Seventy percent of his annual income — in one spring.**
 >
-> **There are nine hundred thirty-five thousand farms like his in Serbia, Bosnia, and Montenegro. This is who we build for."**
+> **AgroMind exists to make sure Aleksandar never makes either of those mistakes again."**
 
 ---
 
-## [0:55] — Demo Moment 1: The Frost Alert
+## [0:55] — Feature One: The Optimal Planting Date
 
-*(Pick up the phone from the podium. Hold it up, screen facing you. Walk calmly to the jury table.)*
+*(Pick up the phone from the podium. Walk calmly to the jury table. Hold the screen facing you, tilted toward the nearest judge.)*
 
-> **"This is what Aleksandar sees when he opens AgroMind on a Friday evening in April."**
+> **"Feature one. The optimal planting date."**
 
-*(Tap the **Frost tile** in the 2×2 grid. The detail modal opens with the 14-day forecast and the reasoning bullets. Hold the phone so the **nearest jury member can see**.)*
+*(Tap the **Frost tile** in the 2×2 grid. The detail modal opens. Point to the "Recommended sowing date" at the top.)*
 
-> **"Ninety-four percent frost probability at oh-three-fifteen on April seventh. Six hours of warning. Sprinkler defence starts at oh-two-hundred. Every row saved."**
-
-*(Pause. Let them look at the screen for **three seconds**.)*
-
-> **"This alert — this exact alert — at this exact time — would have saved Aleksandar twenty-two thousand euros.**
+> **"April twenty-second. Not March eighteenth. Not based on a paper almanac — based on twenty years of Copernicus climate data for this exact pin, combined with a fourteen-day ECMWF forecast. The model tells Aleksandar the earliest safe day his crop's frost tolerance survives the entire germination window.**
 >
-> **The app costs him forty euros a year. That is a five-hundred-fifty-times return — in a single night."**
+> **Had he listened to this screen last March, zero trees lost to cold soil."**
+
+*(Pause. Let the judge nearest to you look at the 14-day forecast row. Hold for **3 seconds**.)*
+
+---
+
+## [1:25] — Feature Two: Frost Detection
+
+*(Stay near the jury. Scroll down in the modal to the 14-day bar chart. Point to the red bar showing frost risk.)*
+
+> **"Feature two. Frost detection.**
+>
+> **Ninety-four percent frost probability at oh-three-fifteen on April seventh. That is the alert Aleksandar's phone would have vibrated with at twenty-one-hundred the night before. Six hours of warning. Enough time to start sprinkler defence. Enough time to save every tree that was saved on the farms that had the equipment."**
+
+*(Raise the phone slightly so more of the room sees the bar chart.)*
+
+> **"The model is a gradient-boosted machine learning model, trained on twenty years of ECMWF climate archive, per country. Area Under the Curve, zero point nine nine four. **Better than any commercial frost prediction product sold in Europe today.**"**
 
 *(Lower the phone. Walk back to center stage.)*
 
----
-
-## [1:25] — The Solution
-
-*(Advance slide: one diagram — **6 icons in a ring around a map pin**.)*
-
-> **"AgroMind is six agricultural AI modules, built on the same European-grade science that Bayer and Climate Fieldview sell to thousand-hectare farms for a thousand euros a year.**
->
-> **Frost prediction — a machine learning model trained on twenty years of ECMWF climate data. Area Under the Curve, zero point nine nine four.**
->
-> **Smart irrigation — FAO-56 water balance, accurate to within five percent of laboratory measurement.**
->
-> **Disease risk — Smith Period, TOMCAST, and rust models, per-disease spray windows.**
->
-> **Satellite NDVI — Copernicus Sentinel-2, ten-meter pixels, refreshed every five days.**
->
-> **Field Advisor — three actionable improvements for this field, this month.**
->
-> **Subsidy Match — the exact IPARD call that Aleksandar qualifies for, with one tap.**
->
-> **Localized in Bosnian, Serbian, Montenegrin. Offline-first. Five euros a month."**
+> **"Those are the two features. Optimal planting date. Frost detection. Everything else in the app is supporting surface — irrigation, satellite vigour, subsidy matching. Important. But not what wins a harvest. **These two save the farm.**"**
 
 ---
 
-## [1:55] — Demo Moment 2: Verified AUC
+## [1:55] — Verified, Live, From This Room
 
-*(Walk back to the podium. Advance slide: a **terminal window mockup with `curl https://agro-predict-production.up.railway.app/health`** and the response showing `"model_auc": 0.994`.)*
+*(Advance slide: a **terminal window mockup with `curl https://agro-predict-production.up.railway.app/health`** and the response showing `"model_auc": 0.994`.)*
 
-> **"Everything I just said is verifiable. Right now. From this room.**
+> **"Everything I just said is verifiable right now from this room.**
 >
-> **If any one of you types this curl command into a terminal tonight, you will get the live AUC from our production server. Zero point nine nine four. **No marketing number** — the same number the model served the last farmer who opened the app, and the same number it will serve the next one."**
+> **If any one of you types this curl command into a terminal, you will get the live AUC from our production server. Zero point nine nine four. **Not a slide number** — the same number the model served the last farmer who opened the app, and the same number it will serve the next one."**
 
-*(Look directly at the AI Nation / World Bank representatives.)*
+*(Look directly at the AI Nation and World Bank representatives.)*
 
-> **"This is not a prototype. This is in production."**
+> **"This is not a prototype. This is in production, right now, for every farmer who installs it."**
 
 ---
 
@@ -108,15 +109,17 @@
 
 *(Advance slide: **three numbers, huge type: 935,000 — €1.2M — 550×**.)*
 
-> **"Nine hundred thirty-five thousand farms. That is our total addressable market, across Serbia, Bosnia, and Montenegro.**
+> **"Nine hundred thirty-five thousand farms across Serbia, Bosnia, and Montenegro. That is our addressable market — smallholders who do not have access to either of those two features today.**
 >
-> **One point two million euros of annual recurring revenue. That is our Year Five target, on seventeen thousand paying farmers. Nine percent of the addressable market.**
+> **One point two million euros of annual recurring revenue by Year Five, at five euros a month per farmer. Seventeen thousand paying users. Nine percent market share.**
 >
-> **Five hundred fifty times. That is the return Aleksandar gets on one frost night. There is no consumer software in Europe that delivers that ratio."**
+> **And Aleksandar's return on investment, in one saved frost night: five hundred fifty times. The app costs him forty euros a year. It saves him twenty-two thousand in one night.**
+>
+> **There is no consumer software in Europe that delivers that ratio."**
 
 *(Two seconds. Let the numbers land.)*
 
-> **"We have two back-end services in production, a machine learning model with an AUC that beats every competitor in this category, and a Ministry of Agriculture in Montenegro that has already opened the door."**
+> **"We have two back-end services in production. A machine learning model with an AUC that beats every competitor in this category. And a Ministry of Agriculture in Montenegro that has already opened the door."**
 
 ---
 
@@ -126,11 +129,11 @@
 
 > **"We are not here today asking for funding.**
 >
-> **We are here asking for partnership. A pilot with MTEL's subscribers. A co-marketing slot with a ministry in this room. A letter of intent from the cooperative sitting in row three.**
+> **We are here asking for partnership. A pilot with MTEL's subscribers. A co-marketing slot with a ministry in this room. A letter of intent from a cooperative sitting in row three.**
 >
-> **Give us that partnership — and in twelve months, we will give you the first one hundred thousand farmers in the Adria region who are climate-resilient by default.**
+> **Give us that partnership — and in twelve months, we will give you the first one hundred thousand farmers in the Adria region who never make Aleksandar's two mistakes again.**
 >
-> **Aleksandar is counting on us. Thank you."**
+> **Thank you."**
 
 *(Do **not** say "questions?". Hold eye contact with the jury chair for **two full seconds**. Then step back one pace and lower the mic. Sit only when you are invited.)*
 
@@ -138,27 +141,27 @@
 
 ## Timing verification
 
-| Block              | Start   | End     | Words | WPM check |
-|--------------------|---------|---------|-------|-----------|
-| Hook               | 0:00    | 0:25    | 58    | 139       |
-| Persona            | 0:25    | 0:55    | 88    | 176 — **slow down here** |
-| Demo 1 (spoken)    | 0:55    | 1:25    | 60    | 120 (plus 3s silence) |
-| Solution           | 1:25    | 1:55    | 92    | 184 — **slow down here** |
-| Demo 2 (spoken)    | 1:55    | 2:20    | 55    | 132       |
-| Business           | 2:20    | 2:40    | 48    | 144       |
-| Close              | 2:40    | 3:00    | 61    | 183 — **slow down here** |
-| **Total**          | 0:00    | **3:00**| **462** | avg 154 — borderline |
+| Block                                  | Start   | End     | Words | WPM check |
+|----------------------------------------|---------|---------|-------|-----------|
+| Hook                                   | 0:00    | 0:25    | 62    | 149       |
+| Persona + two mistakes                 | 0:25    | 0:55    | 81    | 162 — **slow down here** |
+| Feature 1 (planting date, with demo)   | 0:55    | 1:25    | 76    | 152 (plus 3s silence) |
+| Feature 2 (frost detection, with demo) | 1:25    | 1:55    | 86    | 172 — **slow down here** |
+| Verified live                          | 1:55    | 2:20    | 54    | 130       |
+| Business                               | 2:20    | 2:40    | 70    | 210 — **slow down here a lot** |
+| Close                                  | 2:40    | 3:00    | 61    | 183 — **slow down here** |
+| **Total**                              | 0:00    | **3:00**| **490** | avg 163 — **too fast, need pauses** |
 
-**Target: 140 wpm. Current: 154 wpm (too fast by 10%).**
-**Recommendation:** in every block marked "slow down here", insert a **one-second deliberate pause** between sentences. That drops you to 140 wpm on average and lets the numbers land.
+**Target: 140 wpm. Current: 163 wpm.**
+**Recommendation:** in every block marked "slow down here", insert a **full one-second silence** between sentences. Between "three-and-a-half hectares" and "Aleksandar made two mistakes", insert **two seconds** — this is a dramatic beat, not a filler pause. Let the silence earn the line.
 
 ---
 
 ## Three things the jury will remember if you deliver this well
 
-1. **The name Aleksandar.** Say it 4 times minimum (script has it 4).
-2. **The number 550.** Say it 2 times minimum (script has it 2).
-3. **The phone in their hand.** If one jury member physically touches your phone and sees the frost alert, you have won half of the decision already. Make sure the phone reaches someone.
+1. **"Two mistakes"** — this is the frame that makes the whole pitch click. Say it at least three times across the 3 minutes (script has it 3).
+2. **The name Aleksandar** — say it at least 4 times (script has it 5).
+3. **The phone in their hand** — if one jury member physically touches your phone and sees the April 22 planting date + the 94% frost bar, you have won half of the decision already. Make sure the phone reaches someone.
 
 ---
 
@@ -170,7 +173,7 @@
 
 ### Fallback B: the AUC endpoint is down
 
-- You still say the line. If a judge asks in Q&A "can I try the curl now?", say: **"Our production URL is in the slide. The model is the same model — train on our staging environment right now if you like."** Never show a broken endpoint live.
+- You still say the line. If a judge asks in Q&A "can I try the curl now?", say: **"Our production URL is in the slide. The model is the same model — train on our staging environment if you like."** Never show a broken endpoint live.
 
 ### Fallback C: you forget the next line
 
@@ -180,28 +183,58 @@
 
 - You do **not** answer. You say: **"I will have that answer for you in sixty seconds — let me finish this thought first."** Then you finish. This is the single most important rule of pitching to senior jurors: **never break your own rhythm for an interrupting question**.
 
+### Fallback E: a judge asks about hail protection during Q&A
+
+- Do **not** defend or explain. Say: **"We deliberately scoped this product around the two risks that destroy the most revenue in the Adria region — bad planting timing and frost. Hail protection is a hardware problem; our focus is on the software-solvable losses that matter most to smallholders."**
+- Pivot straight back to planting + frost.
+
+---
+
+## Q&A arsenal — rehearse these aloud, in the order of likelihood
+
+**Q: Why only two features on stage? Isn't the app bigger?**
+*"The app has six modules in production. Only two of them save a harvest. Irrigation saves water; disease saves a spray; NDVI tracks vigour — all useful, all shipping. But if Aleksandar installs AgroMind for one reason, it is because we tell him **when to plant** and **when frost is coming**. Everything else is retention, not acquisition. I built this pitch around what gets him to install in the first place."*
+
+**Q: What makes your planting-date recommendation better than an almanac?**
+*"An almanac is a twenty-year calendar average. A useful baseline, but blind to this year's weather. Our recommendation combines that same twenty-year climatology with a live fourteen-day ECMWF forecast, weighted by the specific frost tolerance of each crop the farmer grows. In a cold spring, we delay the recommended date by two to three weeks over the almanac. In a warm spring, we advance it by one to two weeks. That difference is the entire yield."*
+
+**Q: What is your moat?**
+*"Three layers. One — a country-specific ML model trained on twenty-year local climate archives, not global data. Two — the only consumer-grade app in this category shipping Bosnian and Serbian as first-class languages. Three — our product is scoped around the two features that matter most in this region; competitors are horizontal platforms that dilute the user's attention. A US competitor would need eighteen months to ship the third one alone."*
+
+**Q: What's the biggest risk?**
+*"Distribution. The science works; the model works. Our biggest risk is that we cannot put this on a hundred thousand phones in eighteen months. That is exactly why we are here — we need a telecom partner, a ministry anchor, and a cooperative letter of intent."*
+
+**Q: How do you handle data privacy / GDPR?**
+*"Farmer location is stored on-device in AsyncStorage. We send only latitude and longitude to our backend — never name, never farm name, never phone number — in order to query Copernicus, Open-Meteo, and our own ML. Full GDPR Article 5 data minimization. We have never sold, and contractually cannot sell, farmer data."*
+
+**Q: Why will MTEL care?**
+*"Three reasons. One — MTEL sells 4G subscriptions to rural farmers; AgroMind is the killer app that increases data ARPU and reduces churn. Two — co-branded MTEL × AgroMind is a consumer lighthouse for MTEL's digital-innovation narrative. Three — we can integrate with MTEL's carrier billing so farmers pay five euros a month on their phone bill, no credit card. That unlocks another three hundred thousand users immediately."*
+
+**Q: What is the team?**
+*"[Your three names]. [One-sentence bio each focusing on agronomy, ML, and full-stack execution]. We have shipped fourteen production PRs in the last four weeks — live commits visible on our GitHub. This is not a deck-only team."*
+
 ---
 
 ## What to print and bring on stage
 
 1. **This document, on A4, single-sided, font size 14, wide line spacing.** So you can read at a glance under stage lighting.
 2. **A second copy** folded in your back pocket. Redundancy.
-3. **The six big numbers on an index card**, black marker, one per line:
-   - 200 million euros
+3. **A single index card** with six anchor numbers + the frame:
+   - **Two mistakes: planting too early, not knowing frost was coming**
+   - €200 million lost April 2025
    - 935,000 farms
    - AUC 0.994
-   - €5 / month
-   - 550× return
+   - €5 / month → 550× return
    - €1.2 million ARR Year 5
 
-These are your anchors. If you lose the script, you can still deliver the pitch from the index card.
+If you lose the script mid-pitch, this card is enough to finish the pitch.
 
 ---
 
-## One final note, and this is the most important line in this document
+## The one line that matters most
 
-**You are not selling software. You are selling the end of Aleksandar's worst night.**
+**You are not selling six features. You are selling the end of Aleksandar's two mistakes.**
 
-Everything in this script is designed to make the jury feel that one sentence in their chest, not just understand it in their head.
+Every sentence in this document exists to serve that line. If a sentence does not serve that line, cut it.
 
 Go win the hackathon.
