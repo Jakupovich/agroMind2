@@ -51,12 +51,20 @@ export function ClimateScoreCard({ score, region, season, delay = 0 }: Props) {
 
         <View style={styles.content}>
           <View style={styles.header}>
-            <View>
+            <View style={styles.headerText}>
               <Text style={styles.regionLabel}>Field Region</Text>
-              <Text style={styles.region}>{region}</Text>
+              <Text style={styles.region} numberOfLines={2}>
+                {region}
+              </Text>
             </View>
             <View style={[styles.badge, { backgroundColor: color + '22', borderColor: color + '44' }]}>
-              <Text style={[styles.badgeText, { color }]}>{getScoreLabel(score)}</Text>
+              <Text
+                style={[styles.badgeText, { color }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {getScoreLabel(score)}
+              </Text>
             </View>
           </View>
 
@@ -121,6 +129,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    gap: Spacing.sm,
+  },
+  headerText: {
+    flex: 1,
+    minWidth: 0,
   },
   regionLabel: {
     fontSize: FontSize.xs,
@@ -136,10 +149,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   badge: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
     borderWidth: 1,
+    maxWidth: 110,
   },
   badgeText: {
     fontSize: FontSize.xs,

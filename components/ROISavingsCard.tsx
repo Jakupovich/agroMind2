@@ -52,9 +52,13 @@ export function ROISavingsCard({ metrics, delay = 0 }: Props) {
             >
               <TrendingUp size={16} color={Colors.green} strokeWidth={2.2} />
             </View>
-            <View>
-              <Text style={styles.title}>{t("roi.title")}</Text>
-              <Text style={styles.subtitle}>{t("roi.subtitle")}</Text>
+            <View style={styles.titleText}>
+              <Text style={styles.title} numberOfLines={1}>
+                {t("roi.title")}
+              </Text>
+              <Text style={styles.subtitle} numberOfLines={2}>
+                {t("roi.subtitle")}
+              </Text>
             </View>
           </View>
           <View
@@ -75,21 +79,19 @@ export function ROISavingsCard({ metrics, delay = 0 }: Props) {
         <View style={styles.metricsRow}>
           <MetricCell
             color={Colors.red}
-            icon={<Snowflake size={14} color={Colors.red} strokeWidth={2.2} />}
+            icon={<Snowflake size={14} color={Colors.red} strokeWidth={2.4} />}
             value={String(metrics.frostEventsAvoided)}
             label={t("roi.frost_events")}
           />
-          <View style={styles.divider} />
           <MetricCell
             color={Colors.blue}
-            icon={<CloudRain size={14} color={Colors.blue} strokeWidth={2.2} />}
+            icon={<CloudRain size={14} color={Colors.blue} strokeWidth={2.4} />}
             value={`${metrics.waterSavedM3.toLocaleString("en-GB")} m³`}
             label={t("roi.water_saved")}
           />
-          <View style={styles.divider} />
           <MetricCell
             color={Colors.amber}
-            icon={<Sprout size={14} color={Colors.amber} strokeWidth={2.2} />}
+            icon={<Sprout size={14} color={Colors.amber} strokeWidth={2.4} />}
             value={String(metrics.diseaseWindowsFlagged)}
             label={t("roi.disease_flagged")}
           />
@@ -114,13 +116,18 @@ function MetricCell({
 }) {
   return (
     <View style={styles.metricCell}>
-      <View style={styles.metricLabelRow}>
+      <View style={[styles.metricIconWrap, { backgroundColor: color + "18" }]}>
         {icon}
-        <Text style={[styles.metricLabel, { color: Colors.textSecondary }]}>
-          {label}
-        </Text>
       </View>
-      <Text style={[styles.metricValue, { color }]}>{value}</Text>
+      <Text style={[styles.metricValue, { color }]} numberOfLines={1} adjustsFontSizeToFit>
+        {value}
+      </Text>
+      <Text
+        style={[styles.metricLabel, { color: Colors.textSecondary }]}
+        numberOfLines={2}
+      >
+        {label}
+      </Text>
     </View>
   );
 }
@@ -137,8 +144,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: Spacing.sm,
   },
-  titleRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    flex: 1,
+    minWidth: 0,
+  },
+  titleText: { flex: 1, minWidth: 0 },
   iconWrap: {
     width: 32,
     height: 32,
@@ -168,34 +183,36 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: -0.3,
   },
+  metricIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 2,
+  },
   metricsRow: {
     flexDirection: "row",
     alignItems: "stretch",
-    gap: Spacing.xs,
+    gap: Spacing.md,
   },
   metricCell: {
     flex: 1,
-    gap: 6,
-  },
-  metricLabelRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
+    gap: 4,
+    alignItems: "flex-start",
+    minWidth: 0,
   },
   metricLabel: {
-    fontSize: FontSize.xs,
-    fontWeight: "600",
+    fontSize: 10,
+    fontWeight: "700",
     letterSpacing: 0.4,
     textTransform: "uppercase",
+    lineHeight: 13,
   },
   metricValue: {
     fontSize: FontSize.lg,
     fontWeight: "800",
     letterSpacing: -0.3,
-  },
-  divider: {
-    width: 1,
-    backgroundColor: Colors.borderSubtle,
   },
   explanation: {
     fontSize: FontSize.sm,
