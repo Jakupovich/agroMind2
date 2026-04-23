@@ -108,6 +108,51 @@
     "risk_moderate": "Umjereno",
     "risk_high": "Visoko"
   },
+  "roi": {
+    "title": "Ušteda u sezoni",
+    "subtitle": "Šta ti je AgroMind zaštitio ove sezone",
+    "frost_events": "Mrazni događaji",
+    "water_saved": "Ušteđena voda",
+    "disease_flagged": "Prozori za bolesti",
+    "explanation": "Na osnovu prognoze mraza, rizika od bolesti i deficita vode koji ti se već prikazuju na dashboardu."
+  },
+  "ipard": {
+    "card_title": "IPARD III · Otvoreni konkursi",
+    "card_subtitle": "Spojeno sa kulturama i lokacijom tvoje farme",
+    "open_call": "OTVORENO",
+    "apply": "Apliciraj",
+    "per_ha": "€{{amount}} / ha",
+    "footnote": "Iznosi su grantovni dio za ciklus 2024–2026. AgroMind može automatski popuniti tvoju prijavu.",
+    "bonus_organic": "organski bonus",
+    "bonus_diesel": "bonus za dizel / inpute",
+    "me": {
+      "programme": "Crna Gora IPARD III 2021–2027",
+      "measure_fruit": "Podrška voćarstvu i vinogradarstvu (M1)",
+      "description_fruit": "Ulaganja u modernizaciju voćnjaka, zaštita od mraza i grada, sadnja. 60% pokrivenog investicionog troška.",
+      "measure_grain": "Podrška ratarstvu i žitaricama (M1)",
+      "description_grain": "Ulaganje u sjemenski materijal, mehanizaciju i preciznu poljoprivredu. Dostupan bonus za dizel.",
+      "measure_vegetable": "Povrće i plastenici (M1)",
+      "description_vegetable": "Modernizacija plastenika, kap-po-kap sistemi, zaštićeni prostor. Dostupan organski bonus."
+    },
+    "ba": {
+      "programme": "FBiH Program finansijskih poticaja 2024",
+      "measure_fruit": "Investicije u voćnjake (M1)",
+      "description_fruit": "Grantovi za sadnju i modernizaciju voćnjaka, uključujući zaštitu od mraza i grada.",
+      "measure_grain": "Ratarstvo i stočna hrana (M1)",
+      "description_grain": "Grantovi po hektaru za kukuruz, pšenicu, ječam, ovas. Dodatak za dizel i đubrivo.",
+      "measure_vegetable": "Povrće i zaštićeni prostor (M1)",
+      "description_vegetable": "Grantovi za plastenike i sisteme kap-po-kap. Dostupan organski bonus."
+    },
+    "rs": {
+      "programme": "Srbija IPARD III 2021–2027",
+      "measure_fruit": "Voćarstvo i vinogradarstvo (M1)",
+      "description_fruit": "60–75% investicionog troška za modernizaciju voćnjaka, zaštita od mraza i grada.",
+      "measure_grain": "Ratarstvo (M1)",
+      "description_grain": "Sjeme, đubrivo, mehanizacija, precizna poljoprivreda. Pokrivenost 60–75% po projektu.",
+      "measure_vegetable": "Povrće i plastenici (M1)",
+      "description_vegetable": "Plastenici i kap-po-kap sistemi. Pokrivenost 60–75%; dostupan organski bonus."
+    }
+  },
   "ndvi": {
     "title": "Satelitski NDVI",
     "subtitle": "Zadnji Sentinel-2 pogled na tvoje polje",
