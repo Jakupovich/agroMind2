@@ -107,19 +107,37 @@ These two features are the product. Everything else (irrigation, disease, NDVI, 
 
 ## [2:20] — The Business
 
-*(Advance slide: **three numbers, huge type: 935,000 — €1.2M — 550×**.)*
+*(Advance slide: **three numbers, huge type: 935,000 — €1.2 M — 550×**. Straighten up. Two-handed gesture. Voice drops half a step — this is the grown-up part of the pitch, but short.)*
 
-> **"Nine hundred thirty-five thousand farms across Serbia, Bosnia, and Montenegro. That is our addressable market — smallholders who do not have access to either of those two features today.**
->
-> **One point two million euros of annual recurring revenue by Year Five, at five euros a month per farmer. Seventeen thousand paying users. Nine percent market share.**
->
-> **And Aleksandar's return on investment, in one saved frost night: five hundred fifty times. The app costs him forty euros a year. It saves him twenty-two thousand in one night.**
->
-> **There is no consumer software in Europe that delivers that ratio."**
+> **"Let me give you three numbers before I sit down."**
 
-*(Two seconds. Let the numbers land.)*
+*(Beat. Let the slide do the work for one second.)*
 
-> **"We have two back-end services in production. A machine learning model with an AUC that beats every competitor in this category. And a Ministry of Agriculture in Montenegro that has already opened the door."**
+> **"Nine hundred thirty-five thousand smallholder farms in Serbia, Bosnia, and Montenegro. Every one of them has a phone. Not one of them has a product built for them."**
+
+*(One beat.)*
+
+> **"Five euros a month. That is what Aleksandar pays us. On one saved frost night he gets back six thousand. Five hundred and fifty times return. Farmers do not need a pitch deck to understand that math — they understand it in one screen."**
+
+*(One beat.)*
+
+> **"One point two million euros in annual recurring revenue by Year Five. Seventeen thousand paying farmers. One percent of the market. We do not need to win the market — we need to win one farmer in every village."**
+
+*(Now shift tone — slightly leaning in, conversational, almost conspiratorial. This is the part where you tell them how.)*
+
+> **"And we get there without a single government contract. Without IPARD. Without waiting on a ministry to sign anything.**
+>
+> **Three channels.**
+>
+> **One — insurance. Every frost alert we send saves an insurance company a claim. We take a cut of the premium, they subsidise the app for their policyholders. One company, one deal — ten thousand farmers in the funnel overnight.**
+>
+> **Two — cooperatives. A Saturday, a town, three hundred farmers onboarded over coffee. Not a sales pitch — a demo. The app installs itself while we pour the rakija.**
+>
+> **Three — the neighbour. When Aleksandar's trees live and his neighbour's die, his neighbour downloads the app by Monday morning. We do not chase users. We let frost do it for us."**
+
+*(Two seconds. Let it land.)*
+
+> **"Our production backend is live. Our machine learning model beats every commercial frost product in Europe. And our first thousand farmers do not cost us a cent in Google Ads — they cost us a frost night and a screenshot on WhatsApp."**
 
 ---
 
