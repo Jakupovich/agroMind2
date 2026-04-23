@@ -39,7 +39,7 @@ These two features are the product. Everything else (irrigation, disease, NDVI, 
 
 *(Now look directly at the jury. Hold for one beat.)*
 
-> **"My name is Norda. Today I am going to show you two features that would have saved that night. Just two. The two features that matter more than anything else an app can do for a farmer in the Adria region."**
+> **"My name is Norda. Today I am going to show you two features that would have saved that night. Just two. The two features that decide whether a harvest lives or dies."**
 
 ---
 
