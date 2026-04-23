@@ -133,7 +133,7 @@ export function buildFieldAdvisorTips({
   }
 
   // Cap list at 5 so the card never overwhelms the dashboard.
-  return tips.slice(0, 5);
+  return tips.slice(0, 3);
 }
 
 interface Props {

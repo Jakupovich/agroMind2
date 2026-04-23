@@ -53,15 +53,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="prediction"
-        options={{
-          title: t('tabs.predict'),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="auto-graph" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="history"
         options={{
           title: t('tabs.history'),
@@ -72,12 +63,7 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="hardware"
-        options={{
-          title: t('tabs.hailguard'),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="shield" size={size} color={color} />
-          ),
-        }}
+        options={{ href: null }}
       />
     </Tabs>
   );
