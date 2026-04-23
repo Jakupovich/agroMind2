@@ -108,6 +108,47 @@
     "risk_moderate": "Umjereno",
     "risk_high": "Visoko"
   },
+  "season": {
+    "spring": "Proljeće",
+    "summer": "Ljeto",
+    "autumn": "Jesen",
+    "winter": "Zima"
+  },
+  "climate": {
+    "label_excellent": "Odlično",
+    "label_moderate": "Umjereno",
+    "label_high_risk": "Visok rizik"
+  },
+  "ai_models": {
+    "title": "AI modeli · Preciznost",
+    "subtitle": "Svako predviđanje na dashboardu zasnovano je na naučnoj literaturi",
+    "live": "UŽIVO",
+    "verified": "PROVJERENO",
+    "footnote": "AUC za mraz se povlači uživo iz Agro-Predict /health endpointa. Ostali brojevi su iz objavljenih referenci — izvori su navedeni u pitch deck-u.",
+    "frost_title": "Prognoza mraza",
+    "frost_method": "Gradient Boosting na 20-godišnjem ECMWF arhivu",
+    "frost_source": "Agro-Predict /health · AUC uživo",
+    "disease_title": "Rizik od bolesti i štetočina",
+    "disease_method": "Smith Period (Phytophthora) + TOMCAST DSV (Early Blight)",
+    "disease_source": "ADAS / DLG 1999 · Pscheidt & Stevenson 1988",
+    "irrigation_title": "Pametno navodnjavanje",
+    "irrigation_method": "FAO-56 Penman-Monteith ET0 bilanca vode",
+    "irrigation_source": "Allen et al. 1998 · FAO Irrigation Paper 56",
+    "ndvi_title": "Satelitski NDVI",
+    "ndvi_method": "Sentinel-2 L2A · 10 m GSD · CDSE",
+    "ndvi_source": "ESA Copernicus specifikacija 2021",
+    "weather_title": "Vremenska prognoza",
+    "weather_method": "Open-Meteo ECMWF IFS · 24h T_mean MAE",
+    "weather_source": "Open-Meteo validacioni izvještaj 2024"
+  },
+  "alerts": {
+    "frost_risk_days": "Rizik od mraza na {{count}} dan(a) u sljedećih 14",
+    "irrigation_urgent": "HITNO navodnjavanje · deficit {{mm}} mm",
+    "irrigation_moderate": "Preporučeno navodnjavanje · {{mm}} mm",
+    "disease_high": "Visok rizik od bolesti: {{name}}",
+    "hail_active": "Grad aktivan — zaštiti voćnjake odmah",
+    "storm_detected": "Oluja na tvom području"
+  },
   "roi": {
     "title": "Ušteda u sezoni",
     "subtitle": "Šta ti je AgroMind zaštitio ove sezone",

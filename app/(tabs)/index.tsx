@@ -1,17 +1,17 @@
+import { AIModelsCard } from "@/components/AIModelsCard";
 import { ClimateScoreCard } from "@/components/ClimateScoreCard";
 import { DiseaseRiskCard } from "@/components/DiseaseRiskCard";
 import { FieldStatsCard } from "@/components/FieldStatsCard";
 import { FrostPredictionCard } from "@/components/FrostPredictionCard";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { NDVICard } from "@/components/NDVICard";
-import { PredictionCard } from "@/components/PredictionCard";
 import { ROISavingsCard } from "@/components/ROISavingsCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { SubsidyMatchCard } from "@/components/SubsidyMatchCard";
 import { matchSubsidies } from "@/constants/ipard";
-import { predictions } from "@/constants/mockData";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
+import { useClimateScore } from "@/hooks/useClimateScore";
 import { countryFromLocation } from "@/hooks/useCountryFromLocation";
 import { useDiseaseRisks } from "@/hooks/useDiseaseRisks";
 import { useFarmProfile } from "@/hooks/useFarmProfile";
@@ -19,13 +19,13 @@ import { useFrostPrediction } from "@/hooks/useFrostPrediction";
 import { useIrrigation } from "@/hooks/useIrrigation";
 import { useNdvi } from "@/hooks/useNdvi";
 import { useRoiMetrics } from "@/hooks/useRoiMetrics";
+import { useSeasonLabel } from "@/hooks/useSeasonLabel";
 import { useWeather } from "@/hooks/useWeather";
 import {
   getWeatherDescription,
   isHailRisk,
   isStormRisk,
 } from "@/services/weatherService";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
 import {
   Award,
@@ -43,7 +43,7 @@ import {
   Wind,
 } from "lucide-react-native";
 import { MotiView } from "moti";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -93,17 +93,27 @@ function toAgroPredictCropId(label: string): string {
   return CROP_ID_OVERRIDES[key] ?? key;
 }
 
+function formatToday(locale: string): string {
+  try {
+    return new Date().toLocaleDateString(locale, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    return new Date().toDateString();
+  }
+}
+
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
 
-  const [notifCount] = useState(3);
   const {
     data: weather,
     loading,
     refreshing,
-    error,
     locationName,
     refresh,
   } = useWeather();
@@ -115,9 +125,7 @@ export default function DashboardScreen() {
     () => farm.crops.map(toAgroPredictCropId).filter(Boolean),
     [farm.crops],
   );
-  const primaryCrop = (farmCropIds[0] ??
-    predictions[0]?.crop.toLowerCase() ??
-    "corn") as string;
+  const primaryCrop = (farmCropIds[0] ?? "corn") as string;
   const {
     data: irrigation,
     loading: irrigationLoading,
@@ -140,6 +148,12 @@ export default function DashboardScreen() {
   } = useNdvi(farmLat, farmLon);
 
   const roiMetrics = useRoiMetrics(frost, diseases, irrigation);
+  const climate = useClimateScore(weather, frost, diseases, irrigation);
+  const seasonLabel = useSeasonLabel();
+  const todayLabel = React.useMemo(
+    () => formatToday(i18n.language === "bs" ? "bs-BA" : "en-GB"),
+    [i18n.language],
+  );
   const country = React.useMemo(
     () => countryFromLocation(farm.location),
     [farm.location],
@@ -149,6 +163,21 @@ export default function DashboardScreen() {
     [country, farmCropIds],
   );
   const farmSizeHaSafe = farm.sizeHa > 0 ? farm.sizeHa : 2;
+  const regionLabel = React.useMemo(() => {
+    const countryName =
+      country === "ME"
+        ? "Montenegro"
+        : country === "BA"
+          ? "Bosnia & Herzegovina"
+          : country === "RS"
+            ? "Serbia"
+            : null;
+    const loc = farm.location;
+    const coords = loc
+      ? `${loc.latitude.toFixed(2)}°N · ${loc.longitude.toFixed(2)}°E`
+      : locationName;
+    return countryName ? `${countryName} · ${coords}` : coords;
+  }, [country, farm.location, locationName]);
 
   const liveFieldStats = weather
     ? [
@@ -215,33 +244,71 @@ export default function DashboardScreen() {
   const hailRisk = weather ? isHailRisk(weather.current.weatherCode) : false;
   const stormRisk = weather ? isStormRisk(weather.current.weatherCode) : false;
 
-  const dynamicAlerts = [
-    ...(hailRisk
-      ? [
-          {
-            id: "hail",
-            type: "warning",
-            text: `⚠️ Hail storm active — HailGuard shields deploying`,
-          },
-        ]
-      : []),
-    ...(stormRisk && !hailRisk
-      ? [
-          {
-            id: "storm",
-            type: "warning",
-            text: `Thunderstorm detected in your area`,
-          },
-        ]
-      : []),
-    { id: "1", type: "warning", text: "Frost probability 18% on Apr 16–17" },
-    { id: "2", type: "info", text: "Optimal corn window opens in 5 days" },
-    {
-      id: "3",
-      type: "success",
-      text: "Soil moisture at ideal germination level",
-    },
-  ];
+  const frostDays14 = React.useMemo(() => {
+    if (!frost?.predictions) return 0;
+    return frost.predictions.reduce(
+      (s, p) => s + (p.risk.crop_frost_risk_days_14d ?? 0),
+      0,
+    );
+  }, [frost]);
+
+  const worstDisease = React.useMemo(() => {
+    if (!diseases) return null;
+    for (const report of diseases) {
+      const high = report.risks.find((r) => r.risk === "high");
+      if (high)
+        return { name: high.name_en, crop: report.crop };
+    }
+    return null;
+  }, [diseases]);
+
+  const dynamicAlerts: { id: string; type: "warning" | "info" | "success"; text: string }[] =
+    React.useMemo(() => {
+      const out: { id: string; type: "warning" | "info" | "success"; text: string }[] = [];
+      if (hailRisk) {
+        out.push({ id: "hail", type: "warning", text: t("alerts.hail_active") });
+      } else if (stormRisk) {
+        out.push({
+          id: "storm",
+          type: "warning",
+          text: t("alerts.storm_detected"),
+        });
+      }
+      if (irrigation?.status === "urgent") {
+        out.push({
+          id: "irrigation-urgent",
+          type: "warning",
+          text: t("alerts.irrigation_urgent", {
+            mm: Math.round(irrigation.recommended_mm),
+          }),
+        });
+      } else if (irrigation?.status === "moderate") {
+        out.push({
+          id: "irrigation-moderate",
+          type: "info",
+          text: t("alerts.irrigation_moderate", {
+            mm: Math.round(irrigation.recommended_mm),
+          }),
+        });
+      }
+      if (frostDays14 > 0) {
+        out.push({
+          id: "frost-14d",
+          type: "warning",
+          text: t("alerts.frost_risk_days", { count: frostDays14 }),
+        });
+      }
+      if (worstDisease) {
+        out.push({
+          id: `disease-${worstDisease.crop}`,
+          type: "warning",
+          text: t("alerts.disease_high", { name: worstDisease.name }),
+        });
+      }
+      return out;
+    }, [hailRisk, stormRisk, irrigation, frostDays14, worstDisease, t]);
+
+  const notifCount = dynamicAlerts.filter((a) => a.type === "warning").length;
 
   return (
     <View style={[styles.root, { backgroundColor: Colors.bg }]}>
@@ -272,7 +339,9 @@ export default function DashboardScreen() {
         >
           <View style={styles.locationRow}>
             <MapPin size={14} color={Colors.green} strokeWidth={2} />
-            <Text style={styles.location}>{locationName} · Field A-7</Text>
+            <Text style={styles.location} numberOfLines={1}>
+              {regionLabel}
+            </Text>
             <View
               style={[
                 styles.onlineDot,
@@ -318,7 +387,7 @@ export default function DashboardScreen() {
           <Text style={styles.greeting}>{t("dashboard.greeting")}</Text>
           <View style={styles.greetingMetaRow}>
             <Text style={styles.greetingSub}>
-              Tuesday, April 15 · Spring Planting Season
+              {todayLabel} · {seasonLabel}
             </Text>
             {weather ? (
               <BlurView intensity={12} tint="dark" style={styles.weatherPill}>
@@ -508,9 +577,9 @@ export default function DashboardScreen() {
           </ScrollView>
         </View>
         <ClimateScoreCard
-          score={82}
-          region="Upper Bavaria · Zone 7b"
-          season="Spring 2025"
+          score={climate.score}
+          region={regionLabel}
+          season={seasonLabel}
           delay={300}
         />
 
@@ -693,41 +762,7 @@ export default function DashboardScreen() {
           </ScrollView>
         </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Top AI Recommendation</Text>
-          <View
-            style={[
-              styles.aiBadge,
-              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
-            ]}
-          >
-            <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              GPT-4o
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.predictionWrap}>
-          <PredictionCard data={predictions[0]} delay={500} />
-        </View>
-
-        <View style={styles.secondaryGrid}>
-          {predictions.slice(1).map((pred, i) => (
-            <MotiView
-              key={pred.id}
-              from={{ opacity: 0, translateY: 24 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{
-                type: "timing",
-                duration: 600,
-                delay: 700 + i * 150,
-              }}
-              style={styles.secondaryCard}
-            >
-              <PredictionCard data={pred} delay={700 + i * 150} compact />
-            </MotiView>
-          ))}
-        </View>
+        <AIModelsCard delay={500} />
       </ScrollView>
     </View>
   );
@@ -961,20 +996,5 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     color: Colors.red,
     fontWeight: "600",
-  },
-  predictionWrap: {
-    shadowColor: Colors.green,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 20,
-    elevation: 6,
-  },
-  secondaryGrid: { gap: Spacing.md },
-  secondaryCard: {
-    shadowColor: Colors.green,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
 });
