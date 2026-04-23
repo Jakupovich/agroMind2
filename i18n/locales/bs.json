@@ -112,6 +112,21 @@
     "expanded_disease": "Prikazan je najve\u0107i rizik me\u0111u svim tvojim kulturama u narednih 14 dana. Tapni Field Advisor karticu ispod za korektivne radnje.",
     "expanded_ndvi": "Prosje\u010dni NDVI iz posljednjeg Sentinel-2 prolaska bez oblaka, u kvadratu 500 m oko tvog pina."
   },
+  "planting": {
+    "kicker": "Najbolji dan za sjetvu",
+    "tap_for_reason": "Tapni za razlog",
+    "computing": "Ra\u010dunam najsigurniji dan za sjetvu\u2026",
+    "empty": "Dodaj kulture u onboardingu da vidi\u0161 preporu\u010deni datum sjetve.",
+    "window_closed": "Prozor zatvoren",
+    "try_another_crop": "Nema sigurnog prozora u narednih 14 dana",
+    "planted_already": "Idealni prozor je po\u010deo \u2014 sij sada",
+    "plant_today": "Sij danas",
+    "in_one_day": "Za 1 dan",
+    "in_n_days": "Za {{count}} dana",
+    "status_safe": "Sigurno",
+    "status_monitor": "Pratiti",
+    "status_delay": "Odgoditi"
+  },
   "irrigation": {
     "title": "Pametno navodnjavanje",
     "status": "Status",

@@ -1,5 +1,6 @@
 import { AIModelsCard } from "@/components/AIModelsCard";
 import { AIRiskGrid } from "@/components/AIRiskGrid";
+import { PlantingDateCard } from "@/components/PlantingDateCard";
 import {
   buildFieldAdvisorTips,
   FieldAdvisorCard,
@@ -461,6 +462,12 @@ export default function DashboardScreen() {
             </BlurView>
           </MotiView>
         ) : null}
+
+        <PlantingDateCard
+          predictions={frost?.predictions ?? null}
+          loading={frostLoading || farm.loading}
+          delay={220}
+        />
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
