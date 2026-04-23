@@ -108,6 +108,51 @@
     "risk_moderate": "Moderate",
     "risk_high": "High"
   },
+  "roi": {
+    "title": "Season Savings",
+    "subtitle": "What AgroMind has protected for you",
+    "frost_events": "Frost events",
+    "water_saved": "Water saved",
+    "disease_flagged": "Disease windows",
+    "explanation": "Based on frost forecast, disease risk, and irrigation deficit already on your dashboard today."
+  },
+  "ipard": {
+    "card_title": "IPARD III · Open subsidy calls",
+    "card_subtitle": "Matched to your farm's crops and location",
+    "open_call": "OPEN CALL",
+    "apply": "Apply",
+    "per_ha": "€{{amount}} / ha",
+    "footnote": "Amounts are the grant component for the 2024–2026 cycle. AgroMind can pre-populate your application.",
+    "bonus_organic": "organic bonus",
+    "bonus_diesel": "diesel / input bonus",
+    "me": {
+      "programme": "Montenegro IPARD III 2021–2027",
+      "measure_fruit": "Fruit & viticulture support (M1)",
+      "description_fruit": "Investment in orchard modernisation, anti-frost and anti-hail systems, and replanting. 60% of eligible investment covered.",
+      "measure_grain": "Field crops & grain support (M1)",
+      "description_grain": "Investment in seed stock, machinery, and precision-ag tech. Diesel-input top-up available.",
+      "measure_vegetable": "Vegetables & greenhouse support (M1)",
+      "description_vegetable": "Greenhouse modernisation, drip irrigation, protected cultivation. Organic bonus available."
+    },
+    "ba": {
+      "programme": "FBiH Programme for financial support 2024",
+      "measure_fruit": "Orchard investment (M1)",
+      "description_fruit": "Replanting and modernisation grants for orchards, incl. anti-frost and anti-hail protection.",
+      "measure_grain": "Arable & livestock feed (M1)",
+      "description_grain": "Per-hectare grants for corn, wheat, barley, oats. Diesel and fertiliser input top-up.",
+      "measure_vegetable": "Vegetables & protected cultivation (M1)",
+      "description_vegetable": "Greenhouse + drip irrigation modernisation grants. Organic bonus available."
+    },
+    "rs": {
+      "programme": "Serbia IPARD III 2021–2027",
+      "measure_fruit": "Fruit & viticulture (M1)",
+      "description_fruit": "60–75% of investment cost covered for orchard modernisation, anti-frost and anti-hail systems.",
+      "measure_grain": "Field crops (M1)",
+      "description_grain": "Seed, fertiliser, machinery, precision-ag tech. 60–75% cover per project.",
+      "measure_vegetable": "Vegetables & greenhouse (M1)",
+      "description_vegetable": "Greenhouse and drip-irrigation investment. 60–75% cover; organic bonus available."
+    }
+  },
   "ndvi": {
     "title": "Satellite NDVI",
     "subtitle": "Latest Sentinel-2 look at your field",

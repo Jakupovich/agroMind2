@@ -5,14 +5,20 @@ import { FrostPredictionCard } from "@/components/FrostPredictionCard";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { NDVICard } from "@/components/NDVICard";
 import { PredictionCard } from "@/components/PredictionCard";
+import { ROISavingsCard } from "@/components/ROISavingsCard";
+import { SkeletonCard } from "@/components/SkeletonCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
+import { SubsidyMatchCard } from "@/components/SubsidyMatchCard";
+import { matchSubsidies } from "@/constants/ipard";
 import { predictions } from "@/constants/mockData";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
+import { countryFromLocation } from "@/hooks/useCountryFromLocation";
 import { useDiseaseRisks } from "@/hooks/useDiseaseRisks";
 import { useFarmProfile } from "@/hooks/useFarmProfile";
 import { useFrostPrediction } from "@/hooks/useFrostPrediction";
 import { useIrrigation } from "@/hooks/useIrrigation";
 import { useNdvi } from "@/hooks/useNdvi";
+import { useRoiMetrics } from "@/hooks/useRoiMetrics";
 import { useWeather } from "@/hooks/useWeather";
 import {
   getWeatherDescription,
@@ -22,6 +28,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
 import {
+  Award,
   Bell,
   CloudSun,
   Droplets,
@@ -32,6 +39,7 @@ import {
   Sprout,
   Sun,
   Thermometer,
+  TrendingUp,
   Wind,
 } from "lucide-react-native";
 import { MotiView } from "moti";
@@ -130,6 +138,17 @@ export default function DashboardScreen() {
     loading: ndviLoading,
     error: ndviError,
   } = useNdvi(farmLat, farmLon);
+
+  const roiMetrics = useRoiMetrics(frost, diseases, irrigation);
+  const country = React.useMemo(
+    () => countryFromLocation(farm.location),
+    [farm.location],
+  );
+  const subsidies = React.useMemo(
+    () => (country ? matchSubsidies(country, farmCropIds) : []),
+    [country, farmCropIds],
+  );
+  const farmSizeHaSafe = farm.sizeHa > 0 ? farm.sizeHa : 2;
 
   const liveFieldStats = weather
     ? [
@@ -496,6 +515,22 @@ export default function DashboardScreen() {
         />
 
         <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{t("roi.title")}</Text>
+          <View
+            style={[
+              styles.aiBadge,
+              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
+            ]}
+          >
+            <TrendingUp size={11} color={Colors.green} strokeWidth={2.2} />
+            <Text style={[styles.aiLabel, { color: Colors.green }]}>
+              {t("dashboard.badge_agromind_ai")}
+            </Text>
+          </View>
+        </View>
+        <ROISavingsCard metrics={roiMetrics} delay={320} />
+
+        <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t("dashboard.smart_irrigation")}</Text>
           <Droplets size={16} color={Colors.textSecondary} strokeWidth={1.8} />
         </View>
@@ -527,12 +562,7 @@ export default function DashboardScreen() {
         </View>
 
         {farm.loading || frostLoading ? (
-          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
-            <ActivityIndicator color={Colors.green} />
-            <Text style={styles.frostLoadingText}>
-              {t("dashboard.loading_frost")}
-            </Text>
-          </BlurView>
+          <SkeletonCard height={180} delay={40} />
         ) : !farm.location || farmCropIds.length === 0 ? (
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <Text style={styles.frostEmptyText}>
@@ -572,12 +602,7 @@ export default function DashboardScreen() {
         </View>
 
         {farm.loading || diseasesLoading ? (
-          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
-            <ActivityIndicator color={Colors.green} />
-            <Text style={styles.frostLoadingText}>
-              {t("dashboard.loading_disease")}
-            </Text>
-          </BlurView>
+          <SkeletonCard height={180} delay={80} />
         ) : !farm.location || farmCropIds.length === 0 ? (
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <Text style={styles.frostEmptyText}>
@@ -598,6 +623,33 @@ export default function DashboardScreen() {
               />
             ))}
           </View>
+        ) : null}
+
+        {subsidies.length > 0 ? (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{t("ipard.card_title")}</Text>
+              <View
+                style={[
+                  styles.aiBadge,
+                  {
+                    backgroundColor: Colors.amberDim,
+                    borderColor: Colors.border,
+                  },
+                ]}
+              >
+                <Award size={11} color={Colors.amber} strokeWidth={2.2} />
+                <Text style={[styles.aiLabel, { color: Colors.amber }]}>
+                  {country ?? "ADRIA"}
+                </Text>
+              </View>
+            </View>
+            <SubsidyMatchCard
+              opportunities={subsidies}
+              farmSizeHa={farmSizeHaSafe}
+              delay={380}
+            />
+          </>
         ) : null}
 
         <View style={styles.sectionHeader}>
