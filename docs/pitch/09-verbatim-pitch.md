@@ -123,19 +123,59 @@ These two features are the product. Everything else (irrigation, disease, NDVI, 
 
 ---
 
-## [2:40] — The Close
+## [2:40] — The Wow Close
 
-*(Step to center stage. Arms relaxed, not folded. Make eye contact with the jury chair.)*
+*(This is the moment the jury remembers for the rest of the evening. Ignore every instinct to end it "professionally". End it like a story.)*
 
-> **"We are not here today asking for funding.**
->
-> **We are here asking for partnership. A pilot with MTEL's subscribers. A co-marketing slot with a ministry in this room. A letter of intent from a cooperative sitting in row three.**
->
-> **Give us that partnership — and in twelve months, we will give you the first one hundred thousand farmers in the Adria region who never make Aleksandar's two mistakes again.**
->
-> **Thank you."**
+### Setup (do this BEFORE you walk on stage)
 
-*(Do **not** say "questions?". Hold eye contact with the jury chair for **two full seconds**. Then step back one pace and lower the mic. Sit only when you are invited.)*
+On the demo phone, schedule a **fake local push notification** to fire at exactly **2:45 into your pitch** (so ~165 seconds after your first word). Notification content, verbatim:
+
+> **"Frost risk 94% at 03:15. Protect your orchard — start sprinklers at 02:00."**
+
+Title: **"AgroMind — FROST ALERT"**. Sound: **default system alert**. Volume: **max**. Vibration: **on**.
+
+Use `expo-notifications` scheduleNotificationAsync with a 2-minute-45-second trigger, started the moment you take the stage. Practice this in a bathroom until you can cue it blindly.
+
+Keep the phone in your left hand, screen down, from the beginning of the pitch. When it vibrates, you will know.
+
+### The close (≈ 20 seconds, delivered one line at a time with pauses)
+
+*(The phone vibrates. You feel it. Stop talking. Look at the phone. Look at the jury. Back to the phone.)*
+
+> **"Sorry — give me one second."**
+
+*(Flip the phone around. Read the alert aloud, slowly, like you are reading it to a friend.)*
+
+> **"'Frost risk ninety-four percent. Protect your orchard.'"**
+
+*(Beat. Look up at the jury. Smile — actually smile, this is the wow moment.)*
+
+> **"Somewhere in Šumadija right now, a farmer's phone just did the same thing. While I was standing here talking to you. That is not a slide. That is not a demo. That is the product."**
+
+*(Hold the phone up, face out, so the jury sees the alert on the lock screen.)*
+
+> **"I could sit down now and my pitch deck would still be the loudest thing in this room — because his phone is going to wake him up at two in the morning, and his sprinklers are going to save forty-seven trees, and tomorrow he is going to have coffee on his porch instead of crying in a field."**
+
+*(One beat. Let them laugh or smile. They will.)*
+
+> **"So we are not asking you for funding today. We are asking for one thing: let us wake up every Aleksandar in this region — before the frost does."**
+
+*(Lower the phone. Take one step back. Tilt the phone screen toward yourself as if reading a text.)*
+
+> **"Good night, Aleksandar."**
+
+*(Drop the mic to your side — **do not mic-drop on the floor, you will pay for it** — walk two steps back, and wait. Do not say "questions?". Do not say "thank you". The phone already said thank you.)*
+
+---
+
+### Why this close works
+
+1. **The interruption is the hook.** Nothing makes a jury lean forward like a speaker stopping mid-sentence because something is happening. We manufacture that moment on cue.
+2. **The alert is self-evidencing.** No slide can claim "our product works" as credibly as the product physically waking up on stage. It is proof by demonstration.
+3. **The humor is in the relief.** "He's going to have coffee on his porch instead of crying in a field" is funny *because* it follows the serious setup. Jury laughs, then realizes what they just laughed at. That is the emotional hook.
+4. **"Good night, Aleksandar."** You spent 3 minutes building the name. This is the payoff — you are saying good night to a man they feel like they have met. It's warm, it's personal, it's memorable. It is the opposite of a corporate close and that is the entire point.
+5. **No "thank you".** Do not beg for approval. The phone does the closing. You just leave.
 
 ---
 
