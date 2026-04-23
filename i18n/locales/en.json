@@ -78,7 +78,8 @@
     "loading_disease": "Running disease & pest risk models for your field…",
     "empty_frost": "Finish onboarding (map pin + at least one crop) to see frost predictions here.",
     "empty_disease": "Finish onboarding (map pin + at least one crop) to see disease & pest risk here.",
-    "empty_irrigation": "Finish onboarding to pick your farm location."
+    "empty_irrigation": "Finish onboarding to pick your farm location.",
+    "frost_section_hint": "Tap any crop to see why this date was chosen and the day-by-day forecast for the planting window."
   },
   "irrigation": {
     "title": "Smart Irrigation",
@@ -100,7 +101,23 @@
     "window": "Window",
     "light_green": "Safe to plant",
     "light_yellow": "Monitor closely",
-    "light_red": "Delay planting"
+    "light_red": "Delay planting",
+    "tap_for_details": "Tap for planting details"
+  },
+  "frost_detail": {
+    "kicker": "Planting window · AI reasoning",
+    "recommended_date": "Recommended sowing date",
+    "window_span": "Valid planting window {{start}} → {{end}}",
+    "why_title": "Why this date?",
+    "why_body": "AgroMind combines a 20-year frost climatology with a live 14-day ECMWF forecast. We pick the earliest day your crop's frost-tolerance stays safe for the whole germination window.",
+    "stat_avg_frost": "Avg frost probability (next 14 d)",
+    "stat_max_frost": "Peak frost probability",
+    "stat_historical": "Historical frost rate (20 y)",
+    "stat_auc": "Model AUC / confidence",
+    "forecast_title": "14-day forecast",
+    "forecast_subtitle": "Daily min/max temperature, rainfall, and per-day frost probability from Open-Meteo ECMWF IFS.",
+    "reasoning_title": "Detailed reasoning",
+    "no_data": "No prediction available for this crop yet."
   },
   "disease": {
     "prevention": "Prevention",
@@ -193,6 +210,32 @@
       "measure_vegetable": "Vegetables & greenhouse (M1)",
       "description_vegetable": "Greenhouse and drip-irrigation investment. 60–75% cover; organic bonus available."
     }
+  },
+  "field_advisor": {
+    "section_title": "Improve your field",
+    "title": "Field Advisor",
+    "subtitle": "Actionable tips from your live AI readings — proven, low-cost interventions.",
+    "tip_variability_title": "Investigate field variability",
+    "tip_variability_body": "NDVI standard deviation across your field is {{stdev}} — noticeably uneven. Walk the weakest zone and check soil compaction, drainage, or patchy emergence.",
+    "tip_variability_impact": "Can lift average yield 5–10%",
+    "tip_canopy_title": "Strengthen canopy growth",
+    "tip_canopy_body": "Mean NDVI {{mean}} is below the vigorous threshold. A split-dose nitrogen application at the next growth stage typically recovers canopy within 2–3 weeks.",
+    "tip_canopy_impact": "Target NDVI +0.10 in 21 days",
+    "tip_mulch_title": "Hold soil moisture with mulch",
+    "tip_mulch_body": "Moderate or urgent irrigation deficit detected. A 3–5 cm organic mulch layer (straw, wood chips, green cuttings) cuts evaporation by up to 70%.",
+    "tip_mulch_impact": "Save ~30% of irrigation water",
+    "tip_rotation_title": "Break the disease cycle",
+    "tip_rotation_body": "Disease pressure is above baseline. Rotate this parcel next season with a non-host crop (legumes for cereals; cereals for solanaceae) to starve soil-borne pathogens.",
+    "tip_rotation_impact": "Up to 50% pathogen reduction",
+    "tip_cover_title": "Sow a cover crop after harvest",
+    "tip_cover_body": "Winter rye or vetch holds the soil, captures nitrogen, and builds organic matter — the single best long-term intervention for Adria soils.",
+    "tip_cover_impact": "+0.2% SOM per season",
+    "tip_organic_title": "Feed the soil, not just the crop",
+    "tip_organic_body": "Apply 2–3 t/ha of composted manure or green-manure ploughdown each autumn. Organic matter is the foundation of drought resilience.",
+    "tip_organic_impact": "+15% water-holding capacity",
+    "tip_shade_title": "Protect young plants from UV",
+    "tip_shade_body": "UV index is 7+. Sensitive transplants (tomato, pepper, leafy greens) benefit from 30% shade cloth during midday hours for the first 10 days after planting.",
+    "tip_shade_impact": "Reduces transplant shock"
   },
   "ndvi": {
     "title": "Satellite NDVI",

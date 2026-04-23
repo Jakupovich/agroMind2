@@ -5,17 +5,19 @@ import {
   trafficLightLabel,
 } from "@/services/agroPredictService";
 import { BlurView } from "expo-blur";
+import { router } from "expo-router";
 import {
   AlertTriangle,
   Calendar,
   CheckCircle2,
+  ChevronRight,
   Leaf,
   Sparkles,
 } from "lucide-react-native";
 import { MotiView } from "moti";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface Props {
   prediction: CropPrediction;
@@ -62,12 +64,24 @@ export function FrostPredictionCard({
     prediction.gpt_explanation !== undefined &&
     prediction.gpt_explanation.length > 0;
 
+  const openDetail = () => {
+    router.push({
+      pathname: "/frost-detail",
+      params: { cropId: prediction.crop.id },
+    });
+  };
+
   return (
     <MotiView
       from={{ opacity: 0, translateY: 24 }}
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ type: "timing", duration: 600, delay }}
     >
+      <Pressable
+        onPress={openDetail}
+        android_ripple={{ color: color + "22" }}
+        style={({ pressed }) => [{ opacity: pressed ? 0.92 : 1 }]}
+      >
       <BlurView
         intensity={16}
         tint="dark"
@@ -165,7 +179,15 @@ export function FrostPredictionCard({
           {formatDate(prediction.recommended_planting.window_start, windowClosed)} →{" "}
           {formatDate(prediction.recommended_planting.window_end, windowClosed)}
         </Text>
+
+        <View style={[styles.tapHint, { borderColor: color + "44" }]}>
+          <Text style={[styles.tapHintText, { color }]}>
+            {t("frost.tap_for_details")}
+          </Text>
+          <ChevronRight size={14} color={color} strokeWidth={2.4} />
+        </View>
       </BlurView>
+      </Pressable>
     </MotiView>
   );
 }
@@ -275,5 +297,18 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xs,
     color: Colors.textMuted,
     fontWeight: "600",
+  },
+  tapHint: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+  },
+  tapHintText: {
+    fontSize: FontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
   },
 });

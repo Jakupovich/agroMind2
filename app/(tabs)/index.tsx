@@ -1,11 +1,13 @@
 import { AIModelsCard } from "@/components/AIModelsCard";
 import { ClimateScoreCard } from "@/components/ClimateScoreCard";
 import { DiseaseRiskCard } from "@/components/DiseaseRiskCard";
-import { FieldStatsCard } from "@/components/FieldStatsCard";
+import {
+  buildFieldAdvisorTips,
+  FieldAdvisorCard,
+} from "@/components/FieldAdvisorCard";
 import { FrostPredictionCard } from "@/components/FrostPredictionCard";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { NDVICard } from "@/components/NDVICard";
-import { ROISavingsCard } from "@/components/ROISavingsCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { SubsidyMatchCard } from "@/components/SubsidyMatchCard";
@@ -18,14 +20,9 @@ import { useFarmProfile } from "@/hooks/useFarmProfile";
 import { useFrostPrediction } from "@/hooks/useFrostPrediction";
 import { useIrrigation } from "@/hooks/useIrrigation";
 import { useNdvi } from "@/hooks/useNdvi";
-import { useRoiMetrics } from "@/hooks/useRoiMetrics";
 import { useSeasonLabel } from "@/hooks/useSeasonLabel";
 import { useWeather } from "@/hooks/useWeather";
-import {
-  getWeatherDescription,
-  isHailRisk,
-  isStormRisk,
-} from "@/services/weatherService";
+import { getWeatherDescription } from "@/services/weatherService";
 import { BlurView } from "expo-blur";
 import {
   Award,
@@ -39,7 +36,6 @@ import {
   Sprout,
   Sun,
   Thermometer,
-  TrendingUp,
   Wind,
 } from "lucide-react-native";
 import { MotiView } from "moti";
@@ -147,7 +143,6 @@ export default function DashboardScreen() {
     error: ndviError,
   } = useNdvi(farmLat, farmLon);
 
-  const roiMetrics = useRoiMetrics(frost, diseases, irrigation);
   const climate = useClimateScore(weather, frost, diseases, irrigation);
   const seasonLabel = useSeasonLabel();
   const todayLabel = React.useMemo(
@@ -179,70 +174,9 @@ export default function DashboardScreen() {
     return countryName ? `${countryName} · ${coords}` : coords;
   }, [country, farm.location, locationName]);
 
-  const liveFieldStats = weather
-    ? [
-        {
-          id: "1",
-          label: "Temperature",
-          value: `${weather.current.temperature}`,
-          unit: "°C",
-          icon: "thermometer",
-          trend: weather.current.temperature > 20 ? "up" : "stable",
-          color: Colors.amber,
-        },
-        {
-          id: "2",
-          label: "Humidity",
-          value: `${weather.current.humidity}%`,
-          unit: "",
-          icon: "droplets",
-          trend: "stable",
-          color: Colors.blue,
-        },
-        {
-          id: "3",
-          label: "Rainfall",
-          value: `${weather.current.precipitation}`,
-          unit: "mm",
-          icon: "cloud-rain",
-          trend: weather.current.precipitation > 0 ? "up" : "down",
-          color: "#6366f1",
-        },
-        {
-          id: "4",
-          label: "Wind Speed",
-          value: `${weather.current.windSpeed}`,
-          unit: "km/h",
-          icon: "wind",
-          trend: "stable",
-          color: Colors.green,
-        },
-        {
-          id: "5",
-          label: "UV Index",
-          value: `${weather.current.uvIndex}`,
-          unit: "",
-          icon: "sun",
-          trend: "stable",
-          color: Colors.amber,
-        },
-        {
-          id: "6",
-          label: "Soil Temp",
-          value: `${weather.current.soilTemperature}`,
-          unit: "°C",
-          icon: "gauge",
-          trend: "stable",
-          color: "#8b5cf6",
-        },
-      ]
-    : [];
-
   const weatherDesc = weather
     ? getWeatherDescription(weather.current.weatherCode)
     : "";
-  const hailRisk = weather ? isHailRisk(weather.current.weatherCode) : false;
-  const stormRisk = weather ? isStormRisk(weather.current.weatherCode) : false;
 
   const frostDays14 = React.useMemo(() => {
     if (!frost?.predictions) return 0;
@@ -265,15 +199,6 @@ export default function DashboardScreen() {
   const dynamicAlerts: { id: string; type: "warning" | "info" | "success"; text: string }[] =
     React.useMemo(() => {
       const out: { id: string; type: "warning" | "info" | "success"; text: string }[] = [];
-      if (hailRisk) {
-        out.push({ id: "hail", type: "warning", text: t("alerts.hail_active") });
-      } else if (stormRisk) {
-        out.push({
-          id: "storm",
-          type: "warning",
-          text: t("alerts.storm_detected"),
-        });
-      }
       if (irrigation?.status === "urgent") {
         out.push({
           id: "irrigation-urgent",
@@ -306,9 +231,22 @@ export default function DashboardScreen() {
         });
       }
       return out;
-    }, [hailRisk, stormRisk, irrigation, frostDays14, worstDisease, t]);
+    }, [irrigation, frostDays14, worstDisease, t]);
 
   const notifCount = dynamicAlerts.filter((a) => a.type === "warning").length;
+
+  const fieldTips = React.useMemo(
+    () =>
+      buildFieldAdvisorTips({
+        t,
+        crops: farmCropIds,
+        irrigation,
+        diseases: diseases ?? null,
+        ndvi,
+        weather,
+      }),
+    [t, farmCropIds, irrigation, diseases, ndvi, weather],
+  );
 
   return (
     <View style={[styles.root, { backgroundColor: Colors.bg }]}>
@@ -413,13 +351,7 @@ export default function DashboardScreen() {
               tint="dark"
               style={[
                 styles.liveWeatherCard,
-                {
-                  borderColor: hailRisk
-                    ? Colors.red + "44"
-                    : stormRisk
-                    ? Colors.amber + "44"
-                    : Colors.border,
-                },
+                { borderColor: Colors.border },
               ]}
             >
               <View style={styles.lwHeader}>
@@ -434,21 +366,6 @@ export default function DashboardScreen() {
                   />
                   <Text style={styles.lwLiveLabel}>LIVE</Text>
                 </View>
-                {hailRisk ? (
-                  <View
-                    style={[
-                      styles.hailBadge,
-                      {
-                        backgroundColor: Colors.red + "22",
-                        borderColor: Colors.red + "44",
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.hailBadgeText, { color: Colors.red }]}>
-                      ⚠️ HAIL RISK
-                    </Text>
-                  </View>
-                ) : null}
               </View>
               <View style={styles.lwGrid}>
                 {[
@@ -584,39 +501,9 @@ export default function DashboardScreen() {
         />
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t("roi.title")}</Text>
-          <View
-            style={[
-              styles.aiBadge,
-              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
-            ]}
-          >
-            <TrendingUp size={11} color={Colors.green} strokeWidth={2.2} />
-            <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              {t("dashboard.badge_agromind_ai")}
-            </Text>
-          </View>
-        </View>
-        <ROISavingsCard metrics={roiMetrics} delay={320} />
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t("dashboard.smart_irrigation")}</Text>
-          <Droplets size={16} color={Colors.textSecondary} strokeWidth={1.8} />
-        </View>
-        <SmartIrrigationCard
-          data={irrigation}
-          loading={irrigationLoading || farm.loading}
-          error={
-            irrigationError ??
-            (!farm.loading && !farm.location
-              ? t("dashboard.empty_irrigation")
-              : null)
-          }
-          delay={350}
-        />
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t("dashboard.frost_prediction")}</Text>
+          <Text style={styles.sectionTitle}>
+            {t("dashboard.frost_prediction")}
+          </Text>
           <View
             style={[
               styles.aiBadge,
@@ -629,6 +516,9 @@ export default function DashboardScreen() {
             </Text>
           </View>
         </View>
+        <Text style={styles.sectionHint}>
+          {t("dashboard.frost_section_hint")}
+        </Text>
 
         {farm.loading || frostLoading ? (
           <SkeletonCard height={180} delay={40} />
@@ -656,7 +546,27 @@ export default function DashboardScreen() {
         ) : null}
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t("dashboard.disease_pest_risk")}</Text>
+          <Text style={styles.sectionTitle}>
+            {t("dashboard.smart_irrigation")}
+          </Text>
+          <Droplets size={16} color={Colors.textSecondary} strokeWidth={1.8} />
+        </View>
+        <SmartIrrigationCard
+          data={irrigation}
+          loading={irrigationLoading || farm.loading}
+          error={
+            irrigationError ??
+            (!farm.loading && !farm.location
+              ? t("dashboard.empty_irrigation")
+              : null)
+          }
+          delay={350}
+        />
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>
+            {t("dashboard.disease_pest_risk")}
+          </Text>
           <View
             style={[
               styles.aiBadge,
@@ -694,6 +604,57 @@ export default function DashboardScreen() {
           </View>
         ) : null}
 
+        {fieldTips.length > 0 ? (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                {t("field_advisor.section_title")}
+              </Text>
+              <View
+                style={[
+                  styles.aiBadge,
+                  {
+                    backgroundColor: Colors.greenDim,
+                    borderColor: Colors.border,
+                  },
+                ]}
+              >
+                <Leaf size={11} color={Colors.green} strokeWidth={2.2} />
+                <Text style={[styles.aiLabel, { color: Colors.green }]}>
+                  {t("dashboard.badge_agromind_ai")}
+                </Text>
+              </View>
+            </View>
+            <FieldAdvisorCard tips={fieldTips} delay={380} />
+          </>
+        ) : null}
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>
+            {t("dashboard.satellite_ndvi")}
+          </Text>
+          <View
+            style={[
+              styles.aiBadge,
+              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
+            ]}
+          >
+            <Text style={[styles.aiLabel, { color: Colors.green }]}>
+              {t("dashboard.badge_sentinel_2")}
+            </Text>
+          </View>
+        </View>
+
+        <NDVICard
+          data={ndvi}
+          loading={ndviLoading || farm.loading}
+          error={
+            ndviError ??
+            (!farm.loading && !farm.location ? t("ndvi.empty") : null)
+          }
+          delay={400}
+        />
+
         {subsidies.length > 0 ? (
           <>
             <View style={styles.sectionHeader}>
@@ -720,47 +681,6 @@ export default function DashboardScreen() {
             />
           </>
         ) : null}
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t("dashboard.satellite_ndvi")}</Text>
-          <View
-            style={[
-              styles.aiBadge,
-              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
-            ]}
-          >
-            <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              {t("dashboard.badge_sentinel_2")}
-            </Text>
-          </View>
-        </View>
-
-        <NDVICard
-          data={ndvi}
-          loading={ndviLoading || farm.loading}
-          error={
-            ndviError ??
-            (!farm.loading && !farm.location ? t("ndvi.empty") : null)
-          }
-          delay={400}
-        />
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t("dashboard.field_statistics")}</Text>
-          <CloudSun size={16} color={Colors.textSecondary} strokeWidth={1.8} />
-        </View>
-
-        <View style={styles.statsOuter}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.statsScroll}
-          >
-            {liveFieldStats.map((stat, i) => (
-              <FieldStatsCard key={stat.id} stat={stat} delay={400 + i * 80} />
-            ))}
-          </ScrollView>
-        </View>
 
         <AIModelsCard delay={500} />
       </ScrollView>
@@ -906,13 +826,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 1,
   },
-  hailBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  hailBadgeText: { fontSize: 10, fontWeight: "800", letterSpacing: 0.5 },
   lwGrid: { flexDirection: "row", justifyContent: "space-between" },
   lwCell: { flex: 1, alignItems: "center", gap: 4 },
   lwValue: { fontSize: FontSize.base, fontWeight: "700" },
@@ -973,11 +886,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: -0.2,
   },
-  statsOuter: { marginHorizontal: -Spacing.md, minHeight: 140 },
-  statsScroll: {
-    flexDirection: "row",
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+  sectionHint: {
+    fontSize: FontSize.xs,
+    color: Colors.textMuted,
+    fontWeight: "500",
+    marginTop: -Spacing.sm,
+    marginBottom: Spacing.xs,
+    lineHeight: 16,
   },
   aiBadge: {
     paddingHorizontal: 10,
