@@ -112,6 +112,21 @@
     "expanded_disease": "Showing the highest-score risk across all your crops for the next 14 days. Tap the Field Advisor card below for mitigation actions.",
     "expanded_ndvi": "Mean NDVI from the latest cloud-free Sentinel-2 pass over a 500 m box around your pin."
   },
+  "planting": {
+    "kicker": "Best day to plant",
+    "tap_for_reason": "Tap to see why",
+    "computing": "Computing the safest sowing day…",
+    "empty": "Add crops in onboarding to see the recommended sowing date.",
+    "window_closed": "Window closed",
+    "try_another_crop": "No safe window in the next 14 days",
+    "planted_already": "Ideal window started — plant now",
+    "plant_today": "Plant today",
+    "in_one_day": "In 1 day",
+    "in_n_days": "In {{count}} days",
+    "status_safe": "Safe",
+    "status_monitor": "Monitor",
+    "status_delay": "Delay"
+  },
   "irrigation": {
     "title": "Smart Irrigation",
     "status": "Status",
