@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1280, initial-scale=1" />
+  <title>AgroMind — Adria Future Hackathon 2026</title>
+  <style>
+    :root {
+      --ink: #E8F3EE;
+      --bg: #0B1612;
+      --surface: #132420;
+      --surface-hi: #1B332C;
+      --green: #2FB682;
+      --green-deep: #1E7A58;
+      --amber: #F2B94B;
+      --red: #E5483A;
+      --sky: #6FB8F2;
+      --muted: #93A7A0;
+      --hairline: #203830;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-feature-settings: 'ss01', 'cv11'; }
+    body { overflow: hidden; font-variant-numeric: tabular-nums; }
+    .stage { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .slide {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: min(1600px, 96vw);
+      aspect-ratio: 16 / 9;
+      transform: translate(-50%, -50%) scale(0.98);
+      opacity: 0;
+      padding: 80px 96px;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 220ms ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .slide.active { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+    .slide h1 { font-weight: 700; font-size: 96px; letter-spacing: -0.02em; line-height: 1.02; }
+    .slide h2 { font-weight: 700; font-size: 72px; letter-spacing: -0.015em; line-height: 1.05; }
+    .slide h3 { font-weight: 600; font-size: 40px; letter-spacing: -0.01em; line-height: 1.15; }
+    .slide p { font-size: 28px; line-height: 1.45; color: var(--ink); max-width: 1100px; }
+    .slide .muted { color: var(--muted); }
+    .slide .green { color: var(--green); }
+    .slide .red { color: var(--red); }
+    .slide .amber { color: var(--amber); }
+    .slide .sky { color: var(--sky); }
+    .slide .tagline { font-size: 32px; color: var(--muted); margin-top: 24px; max-width: 1100px; }
+    .hero-number { font-size: 220px; font-weight: 700; letter-spacing: -0.04em; line-height: 0.95; }
+    .big-number { font-size: 140px; font-weight: 700; letter-spacing: -0.03em; line-height: 0.95; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 10px 18px; border: 1px solid var(--hairline); border-radius: 999px;
+      font-size: 16px; color: var(--muted); background: rgba(255,255,255,0.02);
+    }
+    .chip.green { color: var(--green); border-color: rgba(47,182,130,0.3); }
+    .chip.red { color: var(--red); border-color: rgba(229,72,58,0.3); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .card.hi { background: var(--surface-hi); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: start; }
+    .label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+    .foot { position: absolute; left: 40px; right: 40px; bottom: 28px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 14px; }
+    .foot .brand { letter-spacing: 0.04em; font-weight: 600; color: var(--ink); }
+    .pager { position: fixed; right: 32px; bottom: 20px; color: var(--muted); font-size: 13px; letter-spacing: 0.12em; z-index: 10; }
+    .progress { position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: transparent; z-index: 10; }
+    .progress > div { height: 100%; background: var(--green); transition: width 220ms ease; }
+    .list { display: grid; gap: 14px; }
+    .list > li { list-style: none; padding: 16px 20px; border-left: 3px solid var(--green); background: var(--surface); border-radius: 0 14px 14px 0; font-size: 22px; }
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th, .tbl td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--hairline); font-size: 18px; vertical-align: top; }
+    .tbl th { color: var(--muted); font-weight: 500; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .pill { display: inline-block; padding: 6px 12px; border-radius: 999px; background: rgba(47,182,130,0.12); color: var(--green); font-size: 14px; font-weight: 600; }
+    kbd { background: var(--surface-hi); padding: 2px 8px; border-radius: 6px; font-size: 13px; color: var(--muted); border: 1px solid var(--hairline); }
+    .title-slide {
+      background: radial-gradient(1200px 700px at 70% 30%, rgba(47,182,130,0.18), transparent 60%),
+                  radial-gradient(800px 500px at 20% 80%, rgba(111,184,242,0.10), transparent 60%);
+    }
+    .wordmark {
+      font-size: 120px; font-weight: 800; letter-spacing: -0.03em; line-height: 1;
+      background: linear-gradient(180deg, #ECFBF4 0%, #9FE3C1 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-bar { display: flex; gap: 32px; align-items: baseline; }
+    .stat-bar > div { display: flex; flex-direction: column; gap: 4px; }
+    .code {
+      font-family: 'JetBrains Mono', Menlo, monospace;
+      background: #0A1411; border: 1px solid var(--hairline); border-radius: 14px;
+      padding: 18px 22px; color: #CDE8D9; font-size: 15px; line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .phone {
+      width: 320px; aspect-ratio: 9 / 19; border-radius: 40px; background: #0A1411;
+      border: 2px solid var(--hairline); padding: 20px 14px; position: relative;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    }
+    .phone .notch { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 100px; height: 24px; background: #000; border-radius: 999px; }
+    .phone-card { background: var(--surface); border-radius: 14px; padding: 14px; margin-top: 14px; font-size: 13px; }
+    .phone-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+    .phone-value { font-size: 22px; font-weight: 700; line-height: 1; }
+    .phone-caption { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .connector { position: absolute; border-top: 1px solid rgba(47,182,130,0.4); border-right: 1px solid rgba(47,182,130,0.4); }
+    .demo-word {
+      font-size: 260px; font-weight: 800; color: var(--green); letter-spacing: -0.04em;
+      text-align: center; animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .notice { position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%); color: var(--muted); font-size: 14px; letter-spacing: 0.06em; z-index: 9; }
+    .notice kbd { margin: 0 4px; }
+    .circle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+    .circles { position: relative; width: 560px; height: 480px; margin: 0 auto; }
+    .circle { position: absolute; border-radius: 50%; border: 1px solid rgba(47,182,130,0.4); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
+    .circle .n { font-size: 46px; font-weight: 700; color: var(--ink); }
+    .circle .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
+    .circle.tam { width: 480px; height: 480px; left: 40px; top: 0; background: radial-gradient(circle at 50% 50%, rgba(47,182,130,0.09), transparent 70%); }
+    .circle.sam { width: 340px; height: 340px; left: 110px; top: 70px; background: radial-gradient(circle at 50% 50%, rgba(47,182,130,0.15), transparent 70%); }
+    .circle.som { width: 200px; height: 200px; left: 180px; top: 140px; background: radial-gradient(circle at 50% 50%, rgba(47,182,130,0.25), transparent 70%); }
+    .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; align-items: start; margin-top: 20px; }
+    .timeline .item { padding-top: 20px; position: relative; }
+    .timeline .item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--green); border-radius: 3px; }
+    .timeline .item.future::before { background: var(--hairline); }
+    .timeline .month { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .timeline .text { font-size: 16px; margin-top: 6px; line-height: 1.3; }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage"></div>
+  <div class="pager" id="pager">01 / 12</div>
+  <div class="progress"><div id="bar" style="width: 8.3%"></div></div>
+  <div class="notice">Advance with <kbd>→</kbd> or <kbd>Space</kbd> · Back with <kbd>←</kbd> · Fullscreen with <kbd>F</kbd></div>
+
+  <template id="s-title">
+    <div class="slide title-slide">
+      <div style="margin-top:60px">
+        <div class="label">Adria Future Hackathon · 2026 · Porto Montenegro</div>
+        <div class="wordmark" style="margin-top:24px">AgroMind</div>
+        <p class="tagline" style="font-size:36px; color:var(--ink); margin-top:20px">
+          Protecting 1&nbsp;million Western Balkan farmers from climate loss.
+        </p>
+      </div>
+      <div style="margin-top:auto; display:flex; gap:16px; flex-wrap:wrap;">
+        <span class="chip green">EU Copernicus stack</span>
+        <span class="chip">ML frost AUC&nbsp;0.994</span>
+        <span class="chip">Bosnian / Montenegrin / Serbian</span>
+        <span class="chip">Ships today</span>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>agromind.app</span></div>
+    </div>
+  </template>
+
+  <template id="s-problem">
+    <div class="slide">
+      <div class="label">The problem</div>
+      <div class="grid-2" style="margin-top:32px; gap:80px; flex:1">
+        <div>
+          <div class="hero-number red">200,000 t</div>
+          <p class="tagline">Fruit Serbia lost to spring frost in a single season (2024).</p>
+          <div style="margin-top:40px">
+            <div class="big-number amber">80 %</div>
+            <p class="tagline">Of Serbia's apricots destroyed again in April 2025.</p>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px; padding-top:12px">
+          <div class="card"><h3>935,000 farms exposed</h3><p class="muted" style="font-size:18px; margin-top:8px">Across Montenegro, BiH, Serbia. Climate disasters now annual, not generational.</p></div>
+          <div class="card"><h3>Zero advisory tools in their language</h3><p class="muted" style="font-size:18px; margin-top:8px">Enterprise SaaS speaks English at €1,000/yr. Government portals describe subsidies, don't help farm.</p></div>
+          <div class="card"><h3>A €150 sprinkler saves €6,000 of apricots.</h3><p class="muted" style="font-size:18px; margin-top:8px">Only if the farmer gets the alert in time. Nobody sends that alert today.</p></div>
+        </div>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Problem</span></div>
+    </div>
+  </template>
+
+  <template id="s-tailwinds">
+    <div class="slide">
+      <div class="label">Why now — three tailwinds converging</div>
+      <h2 style="margin-top:16px">A ten-year window is opening this season.</h2>
+      <div class="grid-3" style="margin-top:56px; flex:1">
+        <div class="card">
+          <div class="label green">Climate</div>
+          <div class="big-number" style="margin-top:16px">+40 °C</div>
+          <p class="muted" style="font-size:18px; margin-top:8px">Balkan's hottest summer on record (2024). Frost + drought now annual. Farmers are finally buying defence.</p>
+        </div>
+        <div class="card">
+          <div class="label green">EU capital</div>
+          <div class="big-number" style="margin-top:16px">€&nbsp;1&nbsp;bn</div>
+          <p class="muted" style="font-size:18px; margin-top:8px">IPARD III 2021–2027: €128&nbsp;M CG, €580&nbsp;M RS, BiH onboarding. Digital tools unlock the grants.</p>
+        </div>
+        <div class="card">
+          <div class="label green">Reach</div>
+          <div class="big-number" style="margin-top:16px">78 %</div>
+          <p class="muted" style="font-size:18px; margin-top:8px">Rural smartphone penetration across CG + BiH + RS. First time the market is reachable.</p>
+        </div>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Why now</span></div>
+    </div>
+  </template>
+
+  <template id="s-solution">
+    <div class="slide">
+      <div class="label">The solution</div>
+      <h2 style="margin-top:16px">One app. Four AIs. One farmer.</h2>
+      <div class="grid-2" style="margin-top:40px; flex:1; gap:56px; align-items:center">
+        <div class="grid-2" style="grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="card"><div class="label green">Smart Irrigation</div><h3 style="margin-top:10px">mm today</h3><p class="muted" style="font-size:16px; margin-top:6px">FAO-56 ET₀ water balance + GPT explains in Bosnian.</p></div>
+          <div class="card"><div class="label green">Frost Prediction</div><h3 style="margin-top:10px">14-day risk</h3><p class="muted" style="font-size:16px; margin-top:6px">Gradient-boost ML, 20 yrs ECMWF, AUC 0.994.</p></div>
+          <div class="card"><div class="label green">Disease &amp; Pest</div><h3 style="margin-top:10px">Spray window</h3><p class="muted" style="font-size:16px; margin-top:6px">Smith periods · TOMCAST · Septoria + rust rules.</p></div>
+          <div class="card"><div class="label green">Satellite NDVI</div><h3 style="margin-top:10px">Field vigour</h3><p class="muted" style="font-size:16px; margin-top:6px">Copernicus Sentinel-2 @ 10 m, weekly refresh.</p></div>
+        </div>
+        <div style="display:flex; justify-content:center">
+          <div class="phone">
+            <div class="notch"></div>
+            <div style="margin-top:44px; padding:0 8px">
+              <div class="phone-title">Dobro jutro, Vesna</div>
+              <div class="phone-card" style="border-left:3px solid var(--red)"><div class="phone-title">Frost risk tonight</div><div class="phone-value red">94 %</div><div class="phone-caption">Apricots · 03:00 · Pokreni prskalice</div></div>
+              <div class="phone-card"><div class="phone-title">Smart Irrigation</div><div class="phone-value">18 mm</div><div class="phone-caption">Corn field · Apply tonight</div></div>
+              <div class="phone-card"><div class="phone-title">Saved this month</div><div class="phone-value green">€ 87</div><div class="phone-caption">+ 12,000 L water · 2 frost events</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Solution</span></div>
+    </div>
+  </template>
+
+  <template id="s-demo">
+    <div class="slide" style="justify-content:center; align-items:center;">
+      <div style="text-align:center; margin:auto;">
+        <div class="label">Live on the device now</div>
+        <div class="demo-word">LIVE</div>
+        <p class="tagline" style="text-align:center; margin: 24px auto 0; color: var(--muted)">
+          30-second live demo — farm pinned in Bijelo Polje, Montenegro.
+        </p>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Demo</span></div>
+    </div>
+  </template>
+
+  <template id="s-science">
+    <div class="slide">
+      <div class="label">Defensibility</div>
+      <h2 style="margin-top:16px">Real science. Not a GPT wrapper.</h2>
+      <div style="margin-top:40px; flex:1">
+        <table class="tbl">
+          <thead><tr><th>Feature</th><th>Model / standard</th><th>Why it wins</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Smart Irrigation</strong></td><td><span style="font-family:Menlo,monospace; color:var(--sky)">FAO Irrigation &amp; Drainage Paper 56 (Allen et&nbsp;al., 1998)</span></td><td class="muted">Industry-standard ET₀ water balance.</td></tr>
+            <tr><td><strong>Frost Prediction</strong></td><td><span style="font-family:Menlo,monospace; color:var(--sky)">Gradient Boosting · 20-yr ECMWF Reanalysis Archive</span></td><td class="muted"><span class="green">AUC 0.994</span> on held-out test set.</td></tr>
+            <tr><td><strong>Late Blight (potato)</strong></td><td><span style="font-family:Menlo,monospace; color:var(--sky)">Smith Periods (DEFRA UK)</span></td><td class="muted">Leaf-wetness + RH ≥ 90% threshold.</td></tr>
+            <tr><td><strong>Early Blight (tomato)</strong></td><td><span style="font-family:Menlo,monospace; color:var(--sky)">TOMCAST DSV (Cornell / Penn State)</span></td><td class="muted">Hourly leaf wetness + temperature.</td></tr>
+            <tr><td><strong>Wheat disease</strong></td><td><span style="font-family:Menlo,monospace; color:var(--sky)">Septoria / Fusarium head blight / rust rules</span></td><td class="muted">EIP-AGRI aligned thresholds.</td></tr>
+            <tr><td><strong>Satellite NDVI</strong></td><td><span style="font-family:Menlo,monospace; color:var(--sky)">Copernicus Sentinel-2 L2A · 10 m</span></td><td class="muted">Free, auditable, IPARD-aligned.</td></tr>
+            <tr><td><strong>AI advisory</strong></td><td><span style="font-family:Menlo,monospace; color:var(--sky)">GPT-4o-mini · Bosnian translation layer</span></td><td class="muted">LLM translates decisions, never decides alone.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tagline muted" style="margin-top: 20px">We run the same models as Bayer and Climate Corp — for a fraction of their price, in the farmer's language.</p>
+      <div class="foot"><span class="brand">AgroMind</span><span>Science stack</span></div>
+    </div>
+  </template>
+
+  <template id="s-market">
+    <div class="slide">
+      <div class="label">Market</div>
+      <h2 style="margin-top:16px">A €56 M / yr addressable market in three languages.</h2>
+      <div class="grid-2" style="margin-top:40px; flex:1; gap:56px;">
+        <div>
+          <div class="circles">
+            <div class="circle tam"><div class="l">TAM</div><div class="n">935,000 farms</div><div class="l" style="margin-top:4px">€56 M / yr</div></div>
+            <div class="circle sam"><div class="l">SAM</div><div class="n">210,000</div><div class="l" style="margin-top:4px">€12.6 M / yr</div></div>
+            <div class="circle som"><div class="l">SOM<sub>5y</sub></div><div class="n">17,000</div><div class="l" style="margin-top:4px">€1.2 M ARR</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="label">Competitive white space we own</div>
+          <table class="tbl" style="margin-top:16px">
+            <tbody>
+              <tr><td><strong>xFarm</strong> (EU)</td><td class="muted">€100–350 / module / yr · wrong language</td></tr>
+              <tr><td><strong>Climate FieldView</strong> (Bayer)</td><td class="muted">Global · not localised · not smallholder</td></tr>
+              <tr><td><strong>AgroLIFE</strong> (RS)</td><td class="muted">B2B · enterprise only · no AI prediction</td></tr>
+              <tr><td><strong>eAgrar</strong> (RS govt)</td><td class="muted">Administrative only · no advisory</td></tr>
+            </tbody>
+          </table>
+          <p class="tagline" style="margin-top:24px"><span class="pill">Our edge</span> Smallholder-first · Adria-localised · €4.99 consumer.</p>
+        </div>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Market</span></div>
+    </div>
+  </template>
+
+  <template id="s-business">
+    <div class="slide">
+      <div class="label">Business model</div>
+      <h2 style="margin-top:16px">Freemium SaaS — 91 % gross margin at scale.</h2>
+      <div class="grid-4" style="margin-top:40px">
+        <div class="card"><div class="label">Free</div><h3 style="margin-top:10px">€ 0</h3><p class="muted" style="font-size:16px; margin-top:8px">1 field · 1 crop · live weather · basic forecast.</p></div>
+        <div class="card" style="border: 2px solid var(--green)"><div class="label green">Pro · core revenue</div><h3 style="margin-top:10px">€ 4.99 / mo</h3><p class="muted" style="font-size:16px; margin-top:8px">5 fields · all AI · push alerts · ROI tracker.</p></div>
+        <div class="card"><div class="label">Farm</div><h3 style="margin-top:10px">€ 14.99 / mo</h3><p class="muted" style="font-size:16px; margin-top:8px">25 fields · multi-user · PDF reports.</p></div>
+        <div class="card"><div class="label">Enterprise</div><h3 style="margin-top:10px">from € 499 / mo</h3><p class="muted" style="font-size:16px; margin-top:8px">Coops · ministries · API · white-label.</p></div>
+      </div>
+      <div class="grid-3" style="margin-top:32px">
+        <div class="card hi"><div class="label">ARPU · Pro annual</div><h3 class="green" style="margin-top:10px">€ 3.33 / mo</h3></div>
+        <div class="card hi"><div class="label">Cost to serve</div><h3 style="margin-top:10px">€ 0.29 / mo</h3><p class="muted" style="font-size:14px; margin-top:4px">OpenAI + infra + Stripe + support.</p></div>
+        <div class="card hi"><div class="label">Gross margin</div><h3 class="green" style="margin-top:10px">91 %</h3></div>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Business model</span></div>
+    </div>
+  </template>
+
+  <template id="s-gtm">
+    <div class="slide">
+      <div class="label">Go to market</div>
+      <h2 style="margin-top:16px">Montenegro first. 6-month playbook. Replicate RS + BiH.</h2>
+      <div class="timeline">
+        <div class="item"><div class="month">M + 0</div><div class="text">Win Adria Future Hackathon</div></div>
+        <div class="item"><div class="month">M + 2</div><div class="text">MoU with Montenegro Ministry of Agriculture</div></div>
+        <div class="item"><div class="month">M + 3</div><div class="text">Public launch · App Store + Play Store</div></div>
+        <div class="item"><div class="month">M + 6</div><div class="text">3,000 downloads CG · 180 paying</div></div>
+        <div class="item future"><div class="month">M + 12</div><div class="text">RS + BiH live · 1,500 paying · €72k ARR</div></div>
+        <div class="item future"><div class="month">M + 18</div><div class="text">4,500 paying · €216k ARR · Series A</div></div>
+      </div>
+      <div class="grid-3" style="margin-top:40px">
+        <div class="card"><div class="label green">Anchor</div><h3 style="margin-top:10px">Government MoU</h3><p class="muted" style="font-size:16px; margin-top:8px">Co-announce at next IPARD call. Bulk per-farmer licence.</p></div>
+        <div class="card"><div class="label green">Distribution</div><h3 style="margin-top:10px">Cooperatives &amp; advisory centres</h3><p class="muted" style="font-size:16px; margin-top:8px">3 coops = 80% active farmers reach in CG.</p></div>
+        <div class="card"><div class="label green">Content</div><h3 style="margin-top:10px">Farmers, in Bosnian, on Reels</h3><p class="muted" style="font-size:16px; margin-top:8px">Short-form video of real saves. Zero paid until PMF.</p></div>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Go to market</span></div>
+    </div>
+  </template>
+
+  <template id="s-traction">
+    <div class="slide">
+      <div class="label">Traction</div>
+      <h2 style="margin-top:16px">This is a product. Not a prototype.</h2>
+      <div class="grid-2" style="margin-top:40px; flex:1; gap:64px">
+        <ul class="list">
+          <li><span class="green">✓</span> &nbsp; 2 FastAPI backends in production on Railway · 99.5% uptime</li>
+          <li><span class="green">✓</span> &nbsp; Frost-prediction ML · <strong>AUC 0.994</strong> on held-out test</li>
+          <li><span class="green">✓</span> &nbsp; 8 merged feature PRs · TypeScript end-to-end</li>
+          <li><span class="green">✓</span> &nbsp; Full i18n EN + BS · Serbian shipping Q3 2026</li>
+          <li><span class="green">✓</span> &nbsp; Satellite NDVI via Copernicus CDSE</li>
+          <li><span class="green">✓</span> &nbsp; Smith + TOMCAST · calibrated for regional cultivars</li>
+        </ul>
+        <div class="code">$ curl https://agromind2-production.up.railway.app/ndvi \
+  ?lat=42.44&amp;lon=19.26
+
+HTTP/2 200
+content-type: application/json
+{
+  "image_base64": "iVBORw0KGgoAAAANSUhEUgAA…",
+  "mean_ndvi": 0.72,
+  "acquisition_date": "2026-04-18",
+  "source": "Sentinel-2 L2A · Copernicus CDSE"
+}</div>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Traction</span></div>
+    </div>
+  </template>
+
+  <template id="s-team">
+    <div class="slide">
+      <div class="label">Team</div>
+      <h2 style="margin-top:16px">Three founders. All under 35. All from the region.</h2>
+      <div class="grid-3" style="margin-top:56px; flex:1; align-items:start;">
+        <div class="card" style="text-align:center">
+          <div style="width:160px; height:160px; border-radius:50%; background: linear-gradient(135deg, var(--green-deep), var(--green)); margin: 0 auto 20px;"></div>
+          <h3>Norda Jakupović</h3>
+          <div class="label green" style="margin-top:6px">Co-founder · CEO / Product</div>
+          <p class="muted" style="font-size:16px; margin-top:12px">Full-stack engineer. Owns roadmap &amp; product.</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="width:160px; height:160px; border-radius:50%; background: linear-gradient(135deg, var(--sky), #3E7FB3); margin: 0 auto 20px;"></div>
+          <h3>&lt;Co-founder 2&gt;</h3>
+          <div class="label green" style="margin-top:6px">Co-founder · CTO / ML</div>
+          <p class="muted" style="font-size:16px; margin-top:12px">ML + data engineering. Owns frost &amp; disease models.</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="width:160px; height:160px; border-radius:50%; background: linear-gradient(135deg, var(--amber), #C68A2E); margin: 0 auto 20px;"></div>
+          <h3>&lt;Co-founder 3&gt;</h3>
+          <div class="label green" style="margin-top:6px">Co-founder · COO / GTM</div>
+          <p class="muted" style="font-size:16px; margin-top:12px">Agronomy &amp; regional agribusiness network.</p>
+        </div>
+      </div>
+      <p class="tagline muted" style="text-align:center; margin: 28px auto 0">Advisor (TBC): Biotechnical Faculty, University of Montenegro.</p>
+      <div class="foot"><span class="brand">AgroMind</span><span>Team</span></div>
+    </div>
+  </template>
+
+  <template id="s-ask">
+    <div class="slide" style="justify-content:center; align-items:center; text-align:center">
+      <div style="margin:auto">
+        <div class="label">The ask</div>
+        <div class="hero-number green" style="margin-top:24px">€ 250,000</div>
+        <p class="tagline" style="margin: 12px auto 0">Seed · 18 months runway</p>
+        <div class="grid-4" style="margin-top:48px; width: 1200px">
+          <div class="card hi"><div class="label">Engineering</div><h3 style="margin-top:8px">€ 120k</h3></div>
+          <div class="card hi"><div class="label">Growth</div><h3 style="margin-top:8px">€ 70k</h3></div>
+          <div class="card hi"><div class="label">Infra + data</div><h3 style="margin-top:8px">€ 30k</h3></div>
+          <div class="card hi"><div class="label">Legal + buffer</div><h3 style="margin-top:8px">€ 30k</h3></div>
+        </div>
+        <p class="tagline" style="margin: 40px auto 0">→ 4,500 paying farmers · €216k ARR · Ministry MoU signed · Series&nbsp;A-ready.</p>
+        <h2 class="red" style="margin-top:60px">Thank you.</h2>
+      </div>
+      <div class="foot"><span class="brand">AgroMind</span><span>Ask</span></div>
+    </div>
+  </template>
+
+  <script>
+    const ids = [
+      's-title','s-problem','s-tailwinds','s-solution','s-demo',
+      's-science','s-market','s-business','s-gtm','s-traction',
+      's-team','s-ask'
+    ];
+    const stage = document.getElementById('stage');
+    const pager = document.getElementById('pager');
+    const bar = document.getElementById('bar');
+    let idx = 0;
+    function render() {
+      stage.innerHTML = '';
+      const tpl = document.getElementById(ids[idx]);
+      const node = tpl.content.firstElementChild.cloneNode(true);
+      node.classList.add('active');
+      stage.appendChild(node);
+      pager.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(ids.length).padStart(2, '0');
+      bar.style.width = ((idx + 1) / ids.length * 100).toFixed(2) + '%';
+    }
+    function next() { if (idx < ids.length - 1) { idx++; render(); } }
+    function prev() { if (idx > 0) { idx--; render(); } }
+    function toggleFs() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+      if (e.key.toLowerCase() === 'f') { toggleFs(); }
+      if (e.key === 'Home') { idx = 0; render(); }
+      if (e.key === 'End') { idx = ids.length - 1; render(); }
+    });
+    window.addEventListener('click', () => next());
+    render();
+  </script>
+</body>
+</html>
