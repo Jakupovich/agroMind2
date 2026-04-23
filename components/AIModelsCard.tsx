@@ -113,9 +113,13 @@ export function AIModelsCard({ delay = 0 }: { delay?: number }) {
             <View style={[styles.iconWrap, { backgroundColor: Colors.green + "1F" }]}>
               <Brain size={16} color={Colors.green} strokeWidth={2.2} />
             </View>
-            <View>
-              <Text style={styles.title}>{t("ai_models.title")}</Text>
-              <Text style={styles.subtitle}>{t("ai_models.subtitle")}</Text>
+            <View style={styles.titleText}>
+              <Text style={styles.title} numberOfLines={1}>
+                {t("ai_models.title")}
+              </Text>
+              <Text style={styles.subtitle} numberOfLines={2}>
+                {t("ai_models.subtitle")}
+              </Text>
             </View>
           </View>
           <View style={styles.liveBadge}>
@@ -175,7 +179,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  titleRow: { flexDirection: "row", alignItems: "center", gap: 10, flex: 1 },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    flex: 1,
+    minWidth: 0,
+  },
+  titleText: { flex: 1, minWidth: 0 },
   iconWrap: {
     width: 32,
     height: 32,
@@ -193,13 +204,14 @@ const styles = StyleSheet.create({
   liveBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: Colors.green + "55",
     backgroundColor: Colors.green + "1F",
+    alignSelf: "flex-start",
   },
   liveDot: {
     width: 6,
@@ -211,7 +223,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "800",
     color: Colors.green,
-    letterSpacing: 0.6,
+    letterSpacing: 0.8,
   },
   list: { gap: 0 },
   row: {

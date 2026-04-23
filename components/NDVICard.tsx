@@ -58,9 +58,11 @@ export function NDVICard({ data, loading = false, error = null, delay = 0 }: Pro
             <View style={[styles.iconWrap, { backgroundColor: color + "1F" }]}>
               <Satellite size={16} color={color} strokeWidth={2} />
             </View>
-            <View>
-              <Text style={styles.title}>{t("ndvi.title")}</Text>
-              <Text style={styles.subtitle}>
+            <View style={styles.titleText}>
+              <Text style={styles.title} numberOfLines={1}>
+                {t("ndvi.title")}
+              </Text>
+              <Text style={styles.subtitle} numberOfLines={1}>
                 {data?.acquisition_date
                   ? `${t("ndvi.scene_date")} · ${formatDate(data.acquisition_date)}`
                   : t("ndvi.subtitle")}
@@ -78,7 +80,11 @@ export function NDVICard({ data, loading = false, error = null, delay = 0 }: Pro
               ]}
             >
               <StatusIcon size={12} color={color} strokeWidth={2.5} />
-              <Text style={[styles.badgeText, { color }]}>
+              <Text
+                style={[styles.badgeText, { color }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
                 {data.score_label.toUpperCase()}
               </Text>
             </View>
@@ -161,7 +167,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     flex: 1,
+    minWidth: 0,
   },
+  titleText: { flex: 1, minWidth: 0 },
   iconWrap: {
     width: 32,
     height: 32,
@@ -187,11 +195,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 10,
     borderWidth: 1,
+    maxWidth: 140,
   },
   badgeText: {
-    fontSize: FontSize.xs,
+    fontSize: 10,
     fontWeight: "800",
-    letterSpacing: 0.8,
+    letterSpacing: 0.6,
+    flexShrink: 1,
   },
   loadingRow: { flexDirection: "row", alignItems: "center", gap: 10 },
   loadingText: {
