@@ -1,15 +1,10 @@
 import { AIModelsCard } from "@/components/AIModelsCard";
-import { ClimateScoreCard } from "@/components/ClimateScoreCard";
-import { DiseaseRiskCard } from "@/components/DiseaseRiskCard";
+import { AIRiskGrid } from "@/components/AIRiskGrid";
 import {
   buildFieldAdvisorTips,
   FieldAdvisorCard,
 } from "@/components/FieldAdvisorCard";
-import { FrostPredictionCard } from "@/components/FrostPredictionCard";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { NDVICard } from "@/components/NDVICard";
-import { SkeletonCard } from "@/components/SkeletonCard";
-import { SmartIrrigationCard } from "@/components/SmartIrrigationCard";
 import { SubsidyMatchCard } from "@/components/SubsidyMatchCard";
 import { matchSubsidies } from "@/constants/ipard";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
@@ -25,15 +20,11 @@ import { useWeather } from "@/hooks/useWeather";
 import { getWeatherDescription } from "@/services/weatherService";
 import { BlurView } from "expo-blur";
 import {
-  Award,
   Bell,
-  CloudSun,
   Droplets,
   Leaf,
   MapPin,
   RefreshCw,
-  Snowflake,
-  Sprout,
   Sun,
   Thermometer,
   Wind,
@@ -51,12 +42,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const alertColor = (type: string) => {
-  if (type === "warning") return Colors.amber;
-  if (type === "success") return Colors.green;
-  return Colors.blue;
-};
 
 const WMO_ICON: Record<string, string> = {
   Clear: "☀️",
@@ -122,26 +107,22 @@ export default function DashboardScreen() {
     [farm.crops],
   );
   const primaryCrop = (farmCropIds[0] ?? "corn") as string;
-  const {
-    data: irrigation,
-    loading: irrigationLoading,
-    error: irrigationError,
-  } = useIrrigation(farmLat, farmLon, primaryCrop);
+  const { data: irrigation, loading: irrigationLoading } = useIrrigation(
+    farmLat,
+    farmLon,
+    primaryCrop,
+  );
   const {
     data: frost,
     loading: frostLoading,
     error: frostError,
   } = useFrostPrediction(farmLat, farmLon, farmCropIds);
-  const {
-    data: diseases,
-    loading: diseasesLoading,
-    error: diseasesError,
-  } = useDiseaseRisks(farmLat, farmLon, farmCropIds);
-  const {
-    data: ndvi,
-    loading: ndviLoading,
-    error: ndviError,
-  } = useNdvi(farmLat, farmLon);
+  const { data: diseases, loading: diseasesLoading } = useDiseaseRisks(
+    farmLat,
+    farmLon,
+    farmCropIds,
+  );
+  const { data: ndvi, loading: ndviLoading } = useNdvi(farmLat, farmLon);
 
   const climate = useClimateScore(weather, frost, diseases, irrigation);
   const seasonLabel = useSeasonLabel();
@@ -340,73 +321,110 @@ export default function DashboardScreen() {
             ) : null}
           </View>
         </MotiView>
-        {weather ? (
+        {weather || loading ? (
           <MotiView
             from={{ opacity: 0, translateY: 12 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "timing", duration: 600, delay: 150 }}
           >
             <BlurView
-              intensity={16}
+              intensity={18}
               tint="dark"
               style={[
-                styles.liveWeatherCard,
-                { borderColor: Colors.border },
+                styles.heroCard,
+                {
+                  borderColor:
+                    climate.score >= 75
+                      ? Colors.green + "44"
+                      : climate.score >= 50
+                      ? Colors.amber + "44"
+                      : Colors.red + "44",
+                },
               ]}
             >
-              <View style={styles.lwHeader}>
-                <View style={styles.lwTitleRow}>
-                  <CloudSun size={14} color={Colors.green} strokeWidth={2} />
-                  <Text style={styles.lwTitle}>{t("dashboard.live_weather")}</Text>
-                  <View
-                    style={[
-                      styles.lwLiveDot,
-                      { backgroundColor: Colors.green },
-                    ]}
-                  />
-                  <Text style={styles.lwLiveLabel}>LIVE</Text>
+              <View style={styles.heroTopRow}>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={styles.heroKicker}>
+                    {t("dashboard.climate_resilience")}
+                  </Text>
+                  <View style={styles.heroScoreRow}>
+                    <Text
+                      style={[
+                        styles.heroScore,
+                        {
+                          color:
+                            climate.score >= 75
+                              ? Colors.green
+                              : climate.score >= 50
+                              ? Colors.amber
+                              : Colors.red,
+                        },
+                      ]}
+                    >
+                      {climate.score}
+                    </Text>
+                    <Text style={styles.heroScoreMax}>/100</Text>
+                  </View>
+                  <Text style={styles.heroRegion} numberOfLines={1}>
+                    {regionLabel}
+                  </Text>
                 </View>
+                {weather ? (
+                  <View style={styles.heroWeatherCol}>
+                    <Text style={styles.heroWeatherEmoji}>
+                      {weatherIcon(weatherDesc)}
+                    </Text>
+                    <Text style={styles.heroWeatherTemp}>
+                      {weather.current.temperature}°C
+                    </Text>
+                    <Text
+                      style={styles.heroWeatherDesc}
+                      numberOfLines={1}
+                    >
+                      {weatherDesc}
+                    </Text>
+                  </View>
+                ) : (
+                  <ActivityIndicator color={Colors.green} />
+                )}
               </View>
-              <View style={styles.lwGrid}>
-                {[
-                  {
-                    icon: Thermometer,
-                    label: "Temperature",
-                    value: `${weather.current.temperature}°C`,
-                    color: Colors.amber,
-                  },
-                  {
-                    icon: Droplets,
-                    label: "Humidity",
-                    value: `${weather.current.humidity}%`,
-                    color: Colors.blue,
-                  },
-                  {
-                    icon: Wind,
-                    label: "Wind",
-                    value: `${weather.current.windSpeed} km/h`,
-                    color: Colors.green,
-                  },
-                  {
-                    icon: Sun,
-                    label: "UV Index",
-                    value: `${weather.current.uvIndex}`,
-                    color: Colors.amber,
-                  },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <View key={item.label} style={styles.lwCell}>
-                      <Icon size={14} color={item.color} strokeWidth={2} />
-                      <Text style={[styles.lwValue, { color: item.color }]}>
-                        {item.value}
-                      </Text>
-                      <Text style={styles.lwLabel}>{item.label}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-              {weather.daily.length > 0 ? (
+
+              {weather ? (
+                <View style={styles.heroMiniGrid}>
+                  {[
+                    {
+                      icon: Droplets,
+                      value: `${weather.current.humidity}%`,
+                      color: Colors.blue,
+                    },
+                    {
+                      icon: Wind,
+                      value: `${weather.current.windSpeed} km/h`,
+                      color: Colors.green,
+                    },
+                    {
+                      icon: Sun,
+                      value: `UV ${weather.current.uvIndex}`,
+                      color: Colors.amber,
+                    },
+                    {
+                      icon: Thermometer,
+                      value: `${weather.current.soilTemperature}°C`,
+                      color: "#8b5cf6",
+                    },
+                  ].map((m, i) => {
+                    const Icon = m.icon;
+                    return (
+                      <View key={i} style={styles.heroMiniCell}>
+                        <Icon size={12} color={m.color} strokeWidth={2} />
+                        <Text style={styles.heroMiniValue}>{m.value}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              ) : null}
+
+              {weather && weather.daily.length > 0 ? (
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -415,7 +433,7 @@ export default function DashboardScreen() {
                   {weather.daily.slice(0, 7).map((day) => {
                     const dayLabel = new Date(day.date).toLocaleDateString(
                       "en",
-                      { weekday: "short" }
+                      { weekday: "short" },
                     );
                     const dayDesc = getWeatherDescription(day.weatherCode);
                     return (
@@ -431,98 +449,43 @@ export default function DashboardScreen() {
                   })}
                 </ScrollView>
               ) : null}
+
+              {notifCount > 0 ? (
+                <View style={styles.heroAlertPill}>
+                  <Bell size={12} color={Colors.red} strokeWidth={2.4} />
+                  <Text style={styles.heroAlertText}>
+                    {t("dashboard.open_alerts", { count: notifCount })}
+                  </Text>
+                </View>
+              ) : null}
             </BlurView>
           </MotiView>
-        ) : loading ? (
-          <BlurView
-            intensity={14}
-            tint="dark"
-            style={[
-              styles.liveWeatherCard,
-              { alignItems: "center", paddingVertical: 24 },
-            ]}
-          >
-            <ActivityIndicator color={Colors.green} />
-            <Text style={[styles.lwLabel, { marginTop: 8 }]}>
-              {t("common.loading")}
-            </Text>
-          </BlurView>
         ) : null}
-
-        <View style={styles.alertsSection}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.alertsScroll}
-          >
-            {dynamicAlerts.map((alert, i) => (
-              <MotiView
-                key={alert.id}
-                from={{ opacity: 0, translateX: 20 }}
-                animate={{ opacity: 1, translateX: 0 }}
-                transition={{
-                  type: "timing",
-                  duration: 500,
-                  delay: 200 + i * 100,
-                }}
-              >
-                <BlurView
-                  intensity={14}
-                  tint="dark"
-                  style={[
-                    styles.alertChip,
-                    { borderColor: alertColor(alert.type) + "44" },
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.alertDot,
-                      { backgroundColor: alertColor(alert.type) },
-                    ]}
-                  />
-                  <Text
-                    style={[
-                      styles.alertText,
-                      { color: alertColor(alert.type) },
-                    ]}
-                  >
-                    {alert.text}
-                  </Text>
-                </BlurView>
-              </MotiView>
-            ))}
-          </ScrollView>
-        </View>
-        <ClimateScoreCard
-          score={climate.score}
-          region={regionLabel}
-          season={seasonLabel}
-          delay={300}
-        />
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {t("dashboard.frost_prediction")}
+            {t("dashboard.ai_overview")}
           </Text>
-          <View
-            style={[
-              styles.aiBadge,
-              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
-            ]}
-          >
-            <Snowflake size={11} color={Colors.green} strokeWidth={2.2} />
-            <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              {t("dashboard.badge_agropredict")}
-            </Text>
-          </View>
+          <Text style={styles.sectionTapHint}>
+            {t("dashboard.tap_for_details")}
+          </Text>
         </View>
-        <Text style={styles.sectionHint}>
-          {t("dashboard.frost_section_hint")}
-        </Text>
 
-        {farm.loading || frostLoading ? (
-          <SkeletonCard height={180} delay={40} />
-        ) : !farm.location || farmCropIds.length === 0 ? (
+        <AIRiskGrid
+          frost={{
+            data: frost?.predictions ?? null,
+            loading: frostLoading || farm.loading,
+          }}
+          irrigation={{
+            data: irrigation,
+            loading: irrigationLoading || farm.loading,
+          }}
+          disease={{ data: diseases, loading: diseasesLoading || farm.loading }}
+          ndvi={{ data: ndvi, loading: ndviLoading || farm.loading }}
+          delay={260}
+        />
+
+        {!farm.loading && (!farm.location || farmCropIds.length === 0) ? (
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <Text style={styles.frostEmptyText}>
               {t("dashboard.empty_frost")}
@@ -532,154 +495,18 @@ export default function DashboardScreen() {
           <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
             <Text style={styles.frostErrorText}>{frostError}</Text>
           </BlurView>
-        ) : frost ? (
-          <View style={styles.frostList}>
-            {frost.predictions.map((pred, i) => (
-              <FrostPredictionCard
-                key={pred.crop.id}
-                prediction={pred}
-                gptEnabled={frost.gpt_enabled}
-                delay={400 + i * 120}
-              />
-            ))}
-          </View>
-        ) : null}
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>
-            {t("dashboard.smart_irrigation")}
-          </Text>
-          <Droplets size={16} color={Colors.textSecondary} strokeWidth={1.8} />
-        </View>
-        <SmartIrrigationCard
-          data={irrigation}
-          loading={irrigationLoading || farm.loading}
-          error={
-            irrigationError ??
-            (!farm.loading && !farm.location
-              ? t("dashboard.empty_irrigation")
-              : null)
-          }
-          delay={350}
-        />
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>
-            {t("dashboard.disease_pest_risk")}
-          </Text>
-          <View
-            style={[
-              styles.aiBadge,
-              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
-            ]}
-          >
-            <Sprout size={11} color={Colors.green} strokeWidth={2.2} />
-            <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              {t("dashboard.badge_agromind_ai")}
-            </Text>
-          </View>
-        </View>
-
-        {farm.loading || diseasesLoading ? (
-          <SkeletonCard height={180} delay={80} />
-        ) : !farm.location || farmCropIds.length === 0 ? (
-          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
-            <Text style={styles.frostEmptyText}>
-              {t("dashboard.empty_disease")}
-            </Text>
-          </BlurView>
-        ) : diseasesError && !diseases ? (
-          <BlurView intensity={16} tint="dark" style={styles.frostLoadingCard}>
-            <Text style={styles.frostErrorText}>{diseasesError}</Text>
-          </BlurView>
-        ) : diseases && diseases.length > 0 ? (
-          <View style={styles.frostList}>
-            {diseases.map((report, i) => (
-              <DiseaseRiskCard
-                key={report.crop}
-                report={report}
-                delay={400 + i * 120}
-              />
-            ))}
-          </View>
         ) : null}
 
         {fieldTips.length > 0 ? (
-          <>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>
-                {t("field_advisor.section_title")}
-              </Text>
-              <View
-                style={[
-                  styles.aiBadge,
-                  {
-                    backgroundColor: Colors.greenDim,
-                    borderColor: Colors.border,
-                  },
-                ]}
-              >
-                <Leaf size={11} color={Colors.green} strokeWidth={2.2} />
-                <Text style={[styles.aiLabel, { color: Colors.green }]}>
-                  {t("dashboard.badge_agromind_ai")}
-                </Text>
-              </View>
-            </View>
-            <FieldAdvisorCard tips={fieldTips} delay={380} />
-          </>
+          <FieldAdvisorCard tips={fieldTips.slice(0, 3)} delay={380} />
         ) : null}
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>
-            {t("dashboard.satellite_ndvi")}
-          </Text>
-          <View
-            style={[
-              styles.aiBadge,
-              { backgroundColor: Colors.greenDim, borderColor: Colors.border },
-            ]}
-          >
-            <Text style={[styles.aiLabel, { color: Colors.green }]}>
-              {t("dashboard.badge_sentinel_2")}
-            </Text>
-          </View>
-        </View>
-
-        <NDVICard
-          data={ndvi}
-          loading={ndviLoading || farm.loading}
-          error={
-            ndviError ??
-            (!farm.loading && !farm.location ? t("ndvi.empty") : null)
-          }
-          delay={400}
-        />
-
         {subsidies.length > 0 ? (
-          <>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>{t("ipard.card_title")}</Text>
-              <View
-                style={[
-                  styles.aiBadge,
-                  {
-                    backgroundColor: Colors.amberDim,
-                    borderColor: Colors.border,
-                  },
-                ]}
-              >
-                <Award size={11} color={Colors.amber} strokeWidth={2.2} />
-                <Text style={[styles.aiLabel, { color: Colors.amber }]}>
-                  {country ?? "ADRIA"}
-                </Text>
-              </View>
-            </View>
-            <SubsidyMatchCard
-              opportunities={subsidies}
-              farmSizeHa={farmSizeHaSafe}
-              delay={380}
-            />
-          </>
+          <SubsidyMatchCard
+            opportunities={subsidies}
+            farmSizeHa={farmSizeHaSafe}
+            delay={420}
+          />
         ) : null}
 
         <AIModelsCard delay={500} />
@@ -800,40 +627,108 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     fontWeight: "500",
   },
-  liveWeatherCard: {
+  heroCard: {
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: Colors.border,
     padding: Spacing.lg,
     gap: Spacing.md,
     overflow: "hidden",
   },
-  lwHeader: {
+  heroTopRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    gap: Spacing.md,
   },
-  lwTitleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-  lwTitle: {
-    fontSize: FontSize.base,
-    color: Colors.textPrimary,
-    fontWeight: "700",
-  },
-  lwLiveDot: { width: 6, height: 6, borderRadius: 3 },
-  lwLiveLabel: {
-    fontSize: 9,
-    color: Colors.green,
+  heroKicker: {
+    fontSize: 10,
+    color: Colors.textMuted,
     fontWeight: "800",
-    letterSpacing: 1,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
   },
-  lwGrid: { flexDirection: "row", justifyContent: "space-between" },
-  lwCell: { flex: 1, alignItems: "center", gap: 4 },
-  lwValue: { fontSize: FontSize.base, fontWeight: "700" },
-  lwLabel: {
+  heroScoreRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 4,
+    marginTop: 2,
+  },
+  heroScore: {
+    fontSize: 44,
+    fontWeight: "900",
+    letterSpacing: -2,
+    lineHeight: 46,
+  },
+  heroScoreMax: {
+    fontSize: FontSize.sm,
+    color: Colors.textMuted,
+    fontWeight: "600",
+    marginBottom: 6,
+  },
+  heroRegion: {
+    fontSize: FontSize.xs,
+    color: Colors.textSecondary,
+    fontWeight: "500",
+    marginTop: 4,
+  },
+  heroWeatherCol: {
+    alignItems: "flex-end",
+    minWidth: 80,
+  },
+  heroWeatherEmoji: { fontSize: 30 },
+  heroWeatherTemp: {
+    fontSize: FontSize.xl,
+    color: Colors.textPrimary,
+    fontWeight: "800",
+    letterSpacing: -0.6,
+  },
+  heroWeatherDesc: {
     fontSize: FontSize.xs,
     color: Colors.textMuted,
     fontWeight: "500",
-    textAlign: "center",
+    maxWidth: 100,
+    textAlign: "right",
+  },
+  heroMiniGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: Spacing.sm,
+    paddingTop: Spacing.xs,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border,
+  },
+  heroMiniCell: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  heroMiniValue: {
+    fontSize: FontSize.xs,
+    color: Colors.textPrimary,
+    fontWeight: "700",
+  },
+  heroAlertPill: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: Colors.red + "1A",
+    borderWidth: 1,
+    borderColor: Colors.red + "55",
+  },
+  heroAlertText: {
+    fontSize: FontSize.xs,
+    color: Colors.red,
+    fontWeight: "800",
+    letterSpacing: 0.3,
+  },
+  sectionTapHint: {
+    fontSize: FontSize.xs,
+    color: Colors.textMuted,
+    fontWeight: "500",
   },
   dailyForecastRow: {
     flexDirection: "row",
@@ -857,24 +752,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontWeight: "500",
   },
-  alertsSection: { marginHorizontal: -Spacing.md },
-  alertsScroll: {
-    flexDirection: "row",
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-  },
-  alertChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  alertDot: { width: 6, height: 6, borderRadius: 3 },
-  alertText: { fontSize: FontSize.xs, fontWeight: "600", maxWidth: 220 },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -886,22 +763,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: -0.2,
   },
-  sectionHint: {
-    fontSize: FontSize.xs,
-    color: Colors.textMuted,
-    fontWeight: "500",
-    marginTop: -Spacing.sm,
-    marginBottom: Spacing.xs,
-    lineHeight: 16,
-  },
-  aiBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 10,
-    borderWidth: 1,
-  },
-  aiLabel: { fontSize: FontSize.xs, fontWeight: "700", letterSpacing: 0.5 },
-  frostList: { gap: Spacing.md },
   frostLoadingCard: {
     flexDirection: "row",
     alignItems: "center",
