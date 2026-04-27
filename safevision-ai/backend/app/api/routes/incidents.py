@@ -1,6 +1,9 @@
+import logging
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
+
+logger = logging.getLogger(__name__)
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -162,11 +165,18 @@ async def create_incident_from_detection(
 
     screenshot_url = None
     if body.screenshot_base64:
-        screenshot_url = f"data:image/jpeg;base64,{body.screenshot_base64[:100]}..."
+        if settings.S3_BUCKET and settings.AWS_ACCESS_KEY_ID:
+            # TODO: upload to S3 and set screenshot_url to the resulting URL
+            logger.warning("S3 screenshot upload not yet implemented")
+        else:
+            logger.warning("Screenshot received but S3 not configured — skipping storage")
+
+    if not location:
+        raise HTTPException(status_code=404, detail="Camera location not found")
 
     incident = Incident(
         camera_id=body.camera_id,
-        organization_id=location.organization_id if location else 0,
+        organization_id=location.organization_id,
         location_id=camera.location_id,
         incident_type=body.incident_type,
         severity=body.severity,

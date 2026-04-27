@@ -142,7 +142,7 @@ class ViolenceDetector:
         cy1 = (bbox1[1] + bbox1[3]) / 2
         cx2 = (bbox2[0] + bbox2[2]) / 2
         cy2 = (bbox2[1] + bbox2[3]) / 2
-        w = max(bbox1[2], bbox2[2])
+        w = max(bbox1[2] - bbox1[0], bbox2[2] - bbox2[0])
         dist = ((cx1 - cx2) ** 2 + (cy1 - cy2) ** 2) ** 0.5
         return min(1.0, dist / max(w, 1))
 
