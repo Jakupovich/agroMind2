@@ -5,8 +5,12 @@ export function useAlerts() {
   const [alerts, setAlerts] = useState<AlertEvent['data'][]>([]);
   const [connected, setConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
+  const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const unmountedRef = useRef(false);
 
   const connect = useCallback(() => {
+    if (unmountedRef.current) return;
+
     const token = localStorage.getItem('safevision_token');
     if (!token) return;
 
@@ -20,7 +24,9 @@ export function useAlerts() {
     ws.onopen = () => setConnected(true);
     ws.onclose = () => {
       setConnected(false);
-      setTimeout(connect, 5000);
+      if (!unmountedRef.current) {
+        reconnectRef.current = setTimeout(connect, 5000);
+      }
     };
 
     ws.onmessage = (event) => {
@@ -36,8 +42,14 @@ export function useAlerts() {
   }, []);
 
   useEffect(() => {
+    unmountedRef.current = false;
     connect();
     return () => {
+      unmountedRef.current = true;
+      if (reconnectRef.current) {
+        clearTimeout(reconnectRef.current);
+        reconnectRef.current = null;
+      }
       wsRef.current?.close();
     };
   }, [connect]);

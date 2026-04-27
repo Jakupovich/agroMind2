@@ -115,7 +115,7 @@ class ViolenceDetector:
                 proximity = self._calculate_proximity(p1["bbox"], p2["bbox"])
                 if proximity < 0.3:
                     motion_score = self._estimate_motion_intensity(frame)
-                    confidence = min(1.0, proximity * 0.3 + motion_score * 0.7)
+                    confidence = min(1.0, (1.0 - proximity) * 0.3 + motion_score * 0.7)
 
                     if confidence >= threshold:
                         severity = (

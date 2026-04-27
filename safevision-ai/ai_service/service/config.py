@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 class AISettings(BaseSettings):
     API_URL: str = "http://api:8000"
     REDIS_URL: str = "redis://redis:6379/0"
+    INTERNAL_API_KEY: str = "safevision-internal-key-change-in-production"
 
     # Model paths
     YOLO_MODEL_PATH: str = "models/yolov8n.pt"

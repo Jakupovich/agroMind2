@@ -74,7 +74,7 @@ class StreamProcessor:
 
         try:
             while self._running and cap.isOpened():
-                ret, frame = cap.read()
+                ret, frame = await asyncio.to_thread(cap.read)
                 if not ret:
                     break
 
@@ -82,6 +82,7 @@ class StreamProcessor:
                 self._frame_buffer.append(frame)
 
                 if self._frame_count % ai_settings.FRAME_SKIP != 0:
+                    await asyncio.sleep(0)
                     continue
 
                 await self._run_detections(frame)
@@ -157,10 +158,12 @@ class StreamProcessor:
         }
 
         try:
+            headers = {"X-Internal-API-Key": ai_settings.INTERNAL_API_KEY}
             async with httpx.AsyncClient() as client:
                 resp = await client.post(
                     f"{ai_settings.API_URL}/api/v1/incidents/detect",
                     json=payload,
+                    headers=headers,
                     timeout=10,
                 )
                 if resp.status_code == 201:

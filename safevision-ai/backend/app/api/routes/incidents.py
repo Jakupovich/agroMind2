@@ -1,15 +1,16 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.camera import Camera
 from app.models.incident import Incident
 from app.models.user import User
-from app.schemas.incident import IncidentCreate, IncidentResponse, IncidentStats, IncidentUpdate
+from app.schemas.incident import AIDetectionEvent, IncidentCreate, IncidentResponse, IncidentStats, IncidentUpdate
 
 router = APIRouter(prefix="/incidents", tags=["Incidents"])
 
@@ -134,10 +135,19 @@ async def update_incident(
     return incident
 
 
+async def verify_internal_api_key(
+    x_api_key: str = Header(alias="X-Internal-API-Key"),
+) -> str:
+    if x_api_key != settings.INTERNAL_API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid internal API key")
+    return x_api_key
+
+
 @router.post("/detect", response_model=IncidentResponse, status_code=201)
 async def create_incident_from_detection(
-    body: IncidentCreate,
+    body: AIDetectionEvent,
     db: AsyncSession = Depends(get_db),
+    _api_key: str = Depends(verify_internal_api_key),
 ):
     """Internal endpoint called by the AI service when an incident is detected."""
     cam_result = await db.execute(select(Camera).where(Camera.id == body.camera_id))
@@ -150,6 +160,10 @@ async def create_incident_from_detection(
     loc_result = await db.execute(select(Location).where(Location.id == camera.location_id))
     location = loc_result.scalar_one_or_none()
 
+    screenshot_url = None
+    if body.screenshot_base64:
+        screenshot_url = f"data:image/jpeg;base64,{body.screenshot_base64[:100]}..."
+
     incident = Incident(
         camera_id=body.camera_id,
         organization_id=location.organization_id if location else 0,
@@ -158,8 +172,7 @@ async def create_incident_from_detection(
         severity=body.severity,
         description=body.description,
         confidence=body.confidence,
-        screenshot_url=body.screenshot_url,
-        clip_url=body.clip_url,
+        screenshot_url=screenshot_url,
     )
     db.add(incident)
     await db.flush()
